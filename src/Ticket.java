@@ -1,6 +1,48 @@
-<<<<<<< HEAD
-package PACKAGE_NAME;public class Ticket {
-=======
+
+
+
 public class Ticket {
->>>>>>> 0f7953f72766973f6d7edfeaf57559fab7e62495
+
+    private String status;
+    private String severity;
+    private String description;
+
+    public Ticket(String severity) {
+        //create an open ticket by default on creation.
+        this.status = String.valueOf(Status.OPEN);
+        this.severity = severity;
+        this.description = "";
+    }
+
+    public Ticket(String severity, String description) {
+        //create an open ticket by default on creation.
+        this.status = String.valueOf(Status.OPEN);
+        this.severity = severity;
+        this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(String severity) {
+        this.severity = severity;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
+
