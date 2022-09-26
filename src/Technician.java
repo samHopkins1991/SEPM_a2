@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-public class Technician {
-=======
 public class Technician extends User{
     private Ticket[] assignedTickets;
     private int level;
@@ -25,5 +22,5 @@ public class Technician extends User{
     public void setLevel(int level) {
         this.level = level;
     }
->>>>>>> 0f7953f72766973f6d7edfeaf57559fab7e62495
+
 }

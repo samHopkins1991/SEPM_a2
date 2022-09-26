@@ -1,6 +1,5 @@
 public class User {
-<<<<<<< HEAD
-=======
+
     private String name;
     private String email;
     private String phoneNumber;
@@ -53,5 +52,5 @@ public class User {
     public void setTickets(Ticket[] tickets) {
         this.tickets = tickets;
     }
->>>>>>> 0f7953f72766973f6d7edfeaf57559fab7e62495
+
 }
