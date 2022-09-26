@@ -3,7 +3,8 @@
 ## Assignment 2
 ***
 
-**Contributors** 
+**Contributors**  
+
 Samuel Hopkins s3864355  
 
 Alan Wood  
@@ -16,7 +17,8 @@ Josh Whiteford
 ***
 
 ### About
-The project is a Java IT Ticketing application run on the console. Users can submit tickets while Technicians can view and update them. 
+The project is a Java IT Ticketing application run on the console. Users can submit tickets while Technicians can view and update them.  
+
 *** 
 ***
 ### Current Version 0.0
