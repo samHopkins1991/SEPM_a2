@@ -3,37 +3,37 @@
 
 public class Ticket {
 
-    private String status;
-    private String severity;
+    private Status status;
+    private Severity severity;
     private String description;
 
-    public Ticket(String severity) {
+    public Ticket(Severity severity) {
         //create an open ticket by default on creation.
-        this.status = String.valueOf(Status.OPEN);
+        this.status = Status.OPEN;
         this.severity = severity;
         this.description = "";
     }
 
-    public Ticket(String severity, String description) {
+    public Ticket(Severity severity, String description) {
         //create an open ticket by default on creation.
-        this.status = String.valueOf(Status.OPEN);
+        this.status = Status.OPEN;
         this.severity = severity;
         this.description = description;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
-    public String getSeverity() {
+    public Severity getSeverity() {
         return severity;
     }
 
-    public void setSeverity(String severity) {
+    public void setSeverity(Severity severity) {
         this.severity = severity;
     }
 
