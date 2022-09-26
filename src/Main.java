@@ -6,8 +6,9 @@ import java.util.Scanner;
 public class Main {
     private final Scanner sc;
 
-    // uses User.getClass() to return what user it is.
-    // will have different menu's if user vs technician
+    // these arraylists will store user info for login.
+    // Some users have been hardcoded but can set up new users also
+    // all technicians hardcoded
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Technician> technicians = new ArrayList<>();
 
@@ -21,6 +22,7 @@ public class Main {
     }
 
     // prints initial screen
+    // login or create user
     public void initialScreen(){
 
         System.out.println("What would you like to do?");
@@ -48,7 +50,7 @@ public class Main {
     }
 
     // screen for creating new users
-    // adds
+    // adds new users to users arraylist
     public void newUserScreen(){
         String email;
         String name;
@@ -88,9 +90,8 @@ public class Main {
 
     // login screen for existing users
     public void loginScreen() {
-
+        // boolean keeps track of if it is user vs tech signing in
         boolean isTechnician;
-
         boolean loginSuccess = false;
 
         String email;
@@ -104,7 +105,10 @@ public class Main {
         System.out.println("Please enter your password");
         password = sc.nextLine();
 
-        for (User u : users) {
+        // loops through users in search of match.
+        // if match found then technician is false
+        // passes isTechnician boolean to print menu
+                for (User u : users) {
             if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
                 loginSuccess = true;
                 isTechnician = false;
@@ -113,7 +117,8 @@ public class Main {
                 System.out.println("login success");
             }
         }
-
+        // loops through technician array list in search of match.
+        // if match found then technician is true
         for (Technician t : technicians) {
             if (t.getEmail().equals(email) && t.getPassword().equals(password)) {
                 loginSuccess = true;
@@ -130,7 +135,7 @@ public class Main {
 
         }
     }
-    // prints menu depending on if boolean parameter passed in is true or false
+    // prints menu depending on boolean
     // if true print technician menu
     // if false print user menu
     public void printMenu(boolean isTechnician){
@@ -146,6 +151,8 @@ public class Main {
         Technician b = new Technician ("Niall Horan", "niallhoran@gmail.com", "04123456789", "password123", 1);
         Technician c = new Technician("Louis Tomlinson", "louistomlinson@gmail.com", "04123456789", "password123", 2);
         Technician d = new Technician("Zayn Malik", "zaynmalik@gmail.com", "04123456789", "password123", 2);
+
+        // adds technicians to arraylist
         technicians.add(a);
         technicians.add(b);
         technicians.add(c);
@@ -160,6 +167,7 @@ public class Main {
         User d = new User("Raf", "Raf","04123456789", "Raf");
         User e = new User("Josh", "Josh","04123456789", "Josh");
 
+        // adds users to array list
         users.add(a);
         users.add(b);
         users.add(c);
