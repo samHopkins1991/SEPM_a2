@@ -4,10 +4,14 @@
 ***
 
 **Contributors** 
-Samuel Hopkins s3864355
-Alan Wood
-Rafael Zuniga
-Harley Urquart
+Samuel Hopkins s3864355  
+
+Alan Wood  
+
+Rafael Zuniga  
+
+Harley Urquart  
+
 Josh Whiteford
 ***
 
