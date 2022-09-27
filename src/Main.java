@@ -1,9 +1,11 @@
-
 //this class will be the main driver, running login and menu work
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+
+    //Test current user logged.
+    private User currentUser;
     private final Scanner sc;
 
     // Users can be of type User or Type Technician, this Array list Stores Both Polymorphically
@@ -27,6 +29,7 @@ public class Main {
         System.out.println("What would you like to do?");
         System.out.println("1 - Existing user login");
         System.out.println("2 - Create new user");
+        System.out.println("5 - Exit the program");
 
         String choice = sc.nextLine();
 
@@ -37,8 +40,11 @@ public class Main {
             case "2":
                 newUserScreen();
                 break;
+            case "5":
+                System.out.println("Shutting down!!!!");
+                break;
             default:
-                System.out.println("Please enter only an integer");
+                System.out.println("Please enter a valid choice integer only");
                 initialScreen();
 
 
@@ -106,6 +112,8 @@ public class Main {
         for (User u : users) {
             if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
                 loginSuccess = true;
+                //Test current user logged.
+                currentUser = u;
                 printMenu(u instanceof Technician); // determines if the user is a technician dynamically
                 System.out.println("login success");
             }
@@ -132,10 +140,12 @@ public class Main {
         // view all closed and archived tickets
 
         // these arrays create the menu options for the user
-        String userOptions[] = {"Submit Ticket", "View My Tickets"};
-        String techOptions[] = {"View Assigned Tickets", "View Closed and Archived Tickets"};
+        String userOptions[] = {"Submit Ticket", "View My Tickets", "Log out"};
+        String techOptions[] = {"View Assigned Tickets", "View Closed and Archived Tickets", "Log out"};
 
         System.out.println("*****************");
+        //Prints the current user logged.
+        System.out.println("Welcome " + currentUser.getName());
         if (isTechnician == false){
             System.out.println("User Menu");
             for (int i =0; i < userOptions.length; i++){
