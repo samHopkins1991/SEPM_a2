@@ -139,7 +139,6 @@ public class Main {
     // if true print technician menu
     // if false print user menu
     public void printMenu(boolean isTechnician){
-
         // options for users:
         // submit ticket
         // view my tickets
@@ -149,7 +148,27 @@ public class Main {
         //      -> change status
         //      -> change severity
         // view all closed and archived tickets
-               
+
+        // these arrays create the menu options for the user
+        String userOptions[] = {"Submit Ticket", "View My Tickets"};
+        String techOptions[] = {"View Assigned Tickets", "View Closed and Archived Tickets"};
+
+        System.out.println("*****************");
+        if (isTechnician == false){
+
+            for (int i =0; i < userOptions.length; i++){
+                System.out.printf("%d. %s%n",i +1, userOptions[i]);
+            }
+        } else {
+
+            for (int i =0; i < techOptions.length; i++){
+                System.out.printf("%d. %s%n",i+ 1, techOptions[i]);
+            }
+
+        }
+
+
+
 
 
     }
