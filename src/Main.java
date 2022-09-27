@@ -140,6 +140,16 @@ public class Main {
     // if false print user menu
     public void printMenu(boolean isTechnician){
 
+        // options for users:
+        // submit ticket
+        // view my tickets
+
+        // options for technicians:
+        // view assigned tickets
+        //      -> change status
+        //      -> change severity
+        // view all closed and archived tickets
+               
 
 
     }
