@@ -151,12 +151,55 @@ public class Main {
             for (int i =0; i < userOptions.length; i++){
                 System.out.printf("%d. %s%n",i +1, userOptions[i]);
             }
+
+            String choice = sc.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("submit ticket");
+                    break;
+                case "2":
+                    System.out.println("view my ticket");
+                    break;
+                case "3":
+                    System.out.println("Logging out!!!");
+                    initialScreen();
+                    //clear current user var
+                    currentUser = null;
+                    break;
+                default:
+                    System.out.println("Please enter a valid choice integer only");
+                    printMenu(false);
+            }
+
         } else {
             System.out.println("Technician Menu");
             for (int i =0; i < techOptions.length; i++){
                 System.out.printf("%d. %s%n",i+ 1, techOptions[i]);
             }
+
+            String choice = sc.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("View Assigned Tickets");
+                    break;
+                case "2":
+                    System.out.println("View Closed and Archived Tickets");
+                    break;
+                case "3":
+                    System.out.println("Logging out!!!");
+                    initialScreen();
+                    //clear current user var
+                    currentUser = null;
+                    break;
+                default:
+                    System.out.println("Please enter a valid choice integer only");
+                    printMenu(true);
+            }
         }
+
+
     }
 
     // hardcoded as per assignment spec
