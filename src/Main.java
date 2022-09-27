@@ -6,11 +6,10 @@ import java.util.Scanner;
 public class Main {
     private final Scanner sc;
 
-    // these arraylists will store user info for login.
-    // Some users have been hardcoded but can set up new users also
-    // all technicians hardcoded
+    // Users can be of type User or Type Technician, this Array list Stores Both Polymorphically
+    // The Initial Values are hardcoded as per specification
     private ArrayList<User> users = new ArrayList<>();
-    private ArrayList<Technician> technicians = new ArrayList<>();
+
 
 
     public Main(){
@@ -91,50 +90,33 @@ public class Main {
     // login screen for existing users
     public void loginScreen() {
         // boolean keeps track of if it is user vs tech signing in
-        boolean isTechnician;
         boolean loginSuccess = false;
 
         String email;
         String password;
         System.out.println("*****************");
         System.out.println("LOGIN");
-        System.out.println("*****************");
-        System.out.println();
+        System.out.println("*****************\n");
         System.out.println("please enter your email");
         email = sc.nextLine();
         System.out.println("Please enter your password");
         password = sc.nextLine();
 
         // loops through users in search of match.
-        // if match found then technician is false
-        // passes isTechnician boolean to print menu
-                for (User u : users) {
+        for (User u : users) {
             if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
                 loginSuccess = true;
-                isTechnician = false;
-                printMenu(isTechnician);
-                //test
+                printMenu(u instanceof Technician); // determines if the user is a technician dynamically
                 System.out.println("login success");
             }
         }
-        // loops through technician array list in search of match.
-        // if match found then technician is true
-        for (Technician t : technicians) {
-            if (t.getEmail().equals(email) && t.getPassword().equals(password)) {
-                loginSuccess = true;
-                isTechnician = true;
 
-                printMenu(isTechnician);
-
-            }
-            if (loginSuccess == false) {
-                System.out.println("Email and password do not match");
-                initialScreen();
-            }
-
-
+        if(!loginSuccess){
+            System.out.println("Email and password do not match");
+            initialScreen();
         }
     }
+
     // prints menu depending on boolean
     // if true print technician menu
     // if false print user menu
@@ -155,22 +137,16 @@ public class Main {
 
         System.out.println("*****************");
         if (isTechnician == false){
-
+            System.out.println("User Menu");
             for (int i =0; i < userOptions.length; i++){
                 System.out.printf("%d. %s%n",i +1, userOptions[i]);
             }
         } else {
-
+            System.out.println("Technician Menu");
             for (int i =0; i < techOptions.length; i++){
                 System.out.printf("%d. %s%n",i+ 1, techOptions[i]);
             }
-
         }
-
-
-
-
-
     }
 
     // hardcoded as per assignment spec
@@ -182,10 +158,10 @@ public class Main {
         Technician d = new Technician("Zayn Malik", "zaynmalik@gmail.com", "04123456789", "password123", 2);
 
         // adds technicians to arraylist
-        technicians.add(a);
-        technicians.add(b);
-        technicians.add(c);
-        technicians.add(d);
+        users.add(a);
+        users.add(b);
+        users.add(c);
+        users.add(d);
 
     }
     // hardcoding users for quick login for testing
@@ -204,11 +180,7 @@ public class Main {
         users.add(e);
     }
 
-
-
-
     public static void main(String[] args) {
         new Main();
-
     }
 }
