@@ -8,7 +8,7 @@ public class Main {
     private User currentUser;
     private final Scanner sc;
 
-    // Users can be of type User or Type Technician, this Array list Stores Both Polymorphically
+    // Users can be of type User or Type Technician, this ArrayList stores both
     // The Initial Values are hardcoded as per specification
     private ArrayList<User> users = new ArrayList<>();
 
@@ -31,23 +31,15 @@ public class Main {
 
         String choice = sc.nextLine();
 
-        switch (choice){
-            case "1":
-                loginScreen();
-                break;
-            case "2":
-                newUserScreen();
-                break;
-            case "5":
-                System.out.println("Shutting down!!!!");
-                break;
-            default:
+        switch (choice) {
+            case "1" -> loginScreen();
+            case "2" -> newUserScreen();
+            case "5" -> System.out.println("Shutting down!!!!");
+            default -> {
                 System.out.println("Please enter a valid choice integer only");
                 initialScreen();
+            }
         }
-
-
-
     }
 
     // screen for creating new users
@@ -70,7 +62,7 @@ public class Main {
         System.out.println("Please enter your phone number");
         phoneNumber = this.sc.nextLine();
 
-        while (passwordMatch == false){
+        while (!passwordMatch){
             System.out.println("Please enter a password");
             password = this.sc.nextLine();
             System.out.println("Please re-enter your password");
@@ -140,18 +132,15 @@ public class Main {
         // submit ticket
         // view my tickets
         System.out.println("User Menu");
+        printLogoutOption();
         int choice = getMenuChoice(new String[] {"Submit Ticket", "View My Tickets"});
-
         switch (choice) {
-            case 1:
-                System.out.println("submit ticket");
-                break;
-            case 2:
-                System.out.println("view my ticket");
-                break;
-            default:
+            case 1 -> System.out.println("submit ticket");
+            case 2 -> System.out.println("view my ticket");
+            default -> {
                 System.out.println("Please enter a valid choice integer only");
                 userMenu();
+            }
         }
     }
 
@@ -175,27 +164,23 @@ public class Main {
         //      -> change severity
         // view all closed and archived tickets
         System.out.println("Technician Menu");
+        printLogoutOption();
         int choice = getMenuChoice(new String[] {"View Assigned Tickets", "View Closed and Archived Tickets"});
 
         switch (choice) {
-            case 1:
-                System.out.println("View Assigned Tickets");
-                break;
-            case 2:
-                System.out.println("View Closed and Archived Tickets");
-                break;
-            default:
+            case 1 -> System.out.println("View Assigned Tickets");
+            case 2 -> System.out.println("View Closed and Archived Tickets");
+            default -> {
                 System.out.println("Please enter a valid choice integer only");
                 technicianMenu();
+            }
         }
-
     }
 
     private void logoutUser() {
         System.out.println("Logging out!!!");
         initialScreen();
         currentUser = null; //clear current user var
-        return;
     }
 
     // hardcoded as per assignment spec
