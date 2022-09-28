@@ -7,6 +7,10 @@ public class Main {
     //Test current user logged.
     private User currentUser;
     private final Scanner sc;
+    
+    
+    //Req'd variables for passwordCheck function
+    private final int PASSWORD_LENGTH = 20;
 
     // Users can be of type User or Type Technician, this ArrayList stores both
     // The Initial Values are hardcoded as per specification
@@ -16,35 +20,38 @@ public class Main {
         createTechnicians();
         createUsers();
         this.sc = new Scanner(System.in);
-        initialScreen();
-
+        mainMenu();
+        System.out.println("Shutting down!!!");
     }
 
     // prints initial screen
     // login or create user
-    public void initialScreen(){
+    public void mainMenu(){
 
         System.out.println("What would you like to do?");
-        int choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Forgot My Password", "Exit Program"});
+        int choice = 0;
 
-        switch (choice) {
-            case 1:
-                loginScreen();
-                break;
-            case 2:
-                newUserScreen();
-                break;
-            case 3:
-                resetForgottenPassword();
-                break;
-            case 4:
-                System.out.println("Shutting down!!!");
-                break;
-            default:
-                System.out.println("Please enter a valid choice integer only");
-                initialScreen();
-                break;
+        while(choice != 4){
+            choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Forgot My Password", "Exit Program"});
+            switch (choice) {
+                case 1:
+                    loginScreen();
+                    break;
+                case 2:
+                    newUserScreen();
+                    break;
+                case 3:
+                    resetForgottenPassword();
+                    break;
+                case 4:
+                    return;
+                default:
+                    System.out.println("Please enter a valid choice integer only");
+                    break;
+            }
         }
+
+
     }
 
     private void resetForgottenPassword() {
@@ -65,27 +72,81 @@ public class Main {
                 if(!user.getPhoneNumber().equals(phone)){ return; }
                 // user matches show reset new password dialog
                 resetUserPasswordDialog(user);
-                initialScreen();
+                return; // return to ensure last code is not run.
             }
         }
 
-        // didnt return printing that no user was found
+        // didn't return. printing that no user was found
         System.out.println("No user with that email exists, perhaps you should create one");
     }
 
     private void resetUserPasswordDialog(User user) {
         boolean successful = false;
         while(!successful){
-            System.out.print("Enter New Password: ");
-            String p1 = sc.nextLine(); // TODO validate password
+            System.out.println("Please enter a password which is at least 20 alphanumeric characters.");
+            String p1 = getValidPassword();
             System.out.print("Confirm New Password: ");
             String p2 = sc.nextLine();
 
             if(p1.equals(p2)){
+                //added validation on success for the user to know it worked. Return to initial screen if no match.
+                System.out.println("Password Changed Successfully.");
                 user.setPassword(p1);
                 successful = true;
+            } else {
+                System.out.println("Passwords entered do not match, please try again.");
             }
         }
+    }
+
+    /**
+     * Continually asks for a valid password when one is given will return the entered password to calling function
+     * @return a valid password
+     */
+    private String getValidPassword() {
+        while(true){
+            System.out.print("Enter a valid Password: ");
+            String p1 = sc.nextLine();
+            if(isPasswordValid(p1)){
+               return p1;
+            }
+        }
+    }
+
+
+    //function to validate strength of password
+    private boolean isPasswordValid(String p1) {
+        int capChars = 0, lowChars = 0, digits = 0; // initialization
+        char ch;
+
+        //size check, currently returning to menu for user to try subission again
+        int sizeCheck = p1.length();
+        if(sizeCheck < PASSWORD_LENGTH) {
+            System.out.println("\nThe password does not meet the length requirements.");
+            return false;
+        }
+        else { //check to see if the password contains one or more of the required characters.
+            for (int i = 0; i < PASSWORD_LENGTH; i++)
+            {
+                ch = p1.charAt(i);
+                if(Character.isUpperCase(ch))
+                    capChars = 1;
+                else if(Character.isLowerCase(ch))
+                    lowChars = 1;
+                else if(Character.isDigit(ch))
+                    digits = 1;
+                
+            }
+        }
+        //returns success or failure, failure returns to initial screen to resubmit the request
+        if(capChars==1 && lowChars==1 && digits==1) {
+            return true;
+        }
+        else {
+            System.out.println("\nThe Password is weak, please try again.\n ");
+            return false;
+        }
+        
     }
 
 
@@ -100,26 +161,27 @@ public class Main {
 
         System.out.println("*****************");
         System.out.println("New User");
-        System.out.println("*****************");
-        System.out.println();
-        System.out.println("Please enter your Name");
+        System.out.println("*****************\n");
+        System.out.print("Please enter your Name: ");
         name = this.sc.nextLine();
-        System.out.printf("Thankyou, %s. Please enter your email. %n", name);
+        System.out.printf("Thankyou, %s. Please enter your email: ", name);
         email = this.sc.nextLine();
-        System.out.println("Please enter your phone number");
+        System.out.print("Please enter your phone number: ");
         phoneNumber = this.sc.nextLine();
 
+        // gets a validated password
+        password = getValidPassword();
+
         while (!passwordMatch){
-            System.out.println("Please enter a password");
-            password = this.sc.nextLine();
-            System.out.println("Please re-enter your password");
+            System.out.print("Please confirm your password: ");
             if (password.equals(this.sc.nextLine())){
                 passwordMatch = true;
                 User u = new User(name, email, phoneNumber, password);
                 users.add(u);
-                initialScreen();
-            } else {
-                System.out.println("Passwords did not match");
+                System.out.printf("User %s, was added! %n", u.getName());
+            }
+            else{
+                System.out.println("Passwords do not match!");
             }
         }
     }
@@ -131,25 +193,24 @@ public class Main {
         System.out.println("*****************");
         System.out.println("LOGIN");
         System.out.println("*****************\n");
-        System.out.println("please enter your email");
+        System.out.print("please enter your email: ");
         email = sc.nextLine();
-        System.out.println("Please enter your password");
+        System.out.print("Please enter your password: ");
         password = sc.nextLine();
 
         // loops through users in search of match.
         for (User u : users) {
             if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
                 currentUser = u;
-                printMenu(); // determines if the user is a technician dynamically
                 System.out.println("login success");
                 printUserWelcome();
+                printMenu(); // determines if the user is a technician dynamically
                 return;
             }
         }
 
         // only reached if unsuccessful in login attempt
         System.out.println("You could not be logged in");
-        initialScreen();
     }
 
     private void printLogoutOption(){
@@ -179,22 +240,24 @@ public class Main {
         // submit ticket
         // view my tickets
         System.out.println("User Menu");
-        printLogoutOption(); // -1
-        int choice = getMenuChoice(new String[] {"Submit Ticket", "View My Tickets"});
-        switch (choice) {
-            case -1:
-                logoutUser();
-                break;
-            case 1:
-                System.out.println("submit ticket");
-                break;
-            case 2:
-                System.out.println("view my ticket");
-                break;
-            default:
-                System.out.println("Please enter a valid choice integer only");
-                userMenu();
-                break;
+        int choice = 0;
+
+        while(true){ // returns if a valid choice is given after running the appropriate functions
+            printLogoutOption(); // -1
+            choice = getMenuChoice(new String[] {"Submit Ticket", "View My Tickets"});
+            switch (choice) {
+                case -1:
+                    logoutUser();
+                    return;
+                case 1:
+                    System.out.println("submit ticket");
+                    break;
+                case 2:
+                    System.out.println("view my tickets");
+                    break;
+                default:
+                    System.out.println("Please enter a valid choice integer only");
+            }
         }
     }
 
@@ -202,8 +265,7 @@ public class Main {
         for (int i = 0; i < menuOptions.length; i++){
             System.out.printf("%d. %s%n",i +1, menuOptions[i]);
         }
-        int choice = Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors
-        return choice;
+        return Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors;
     }
 
     private void technicianMenu() {
@@ -216,26 +278,26 @@ public class Main {
         printLogoutOption(); // -1
         int choice = getMenuChoice(new String[] {"View Assigned Tickets", "View Closed and Archived Tickets"});
 
-        switch (choice) {
-            case -1:
-                logoutUser();
-                break;
-            case 1:
-                System.out.println("View Assigned Tickets");
-                break;
-            case 2:
-                System.out.println("View Closed and Archived Tickets");
-                break;
-            default:
-                System.out.println("Please enter a valid choice integer only");
-                technicianMenu();
-                break;
+        while(true){
+            switch (choice) {
+                case -1:
+                    logoutUser();
+                    return;
+                case 1:
+                    System.out.println("View Assigned Tickets");
+                    return;
+                case 2:
+                    System.out.println("View Closed and Archived Tickets");
+                    return;
+                default:
+                    System.out.println("Please enter a valid choice integer only");
+            }
         }
+
     }
 
     private void logoutUser() {
         System.out.println("Logging out!!!");
-        initialScreen();
         currentUser = null; //clear current user var
     }
 
