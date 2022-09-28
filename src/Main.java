@@ -1,16 +1,16 @@
-
 //this class will be the main driver, running login and menu work
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+
+    //Test current user logged.
+    private User currentUser;
     private final Scanner sc;
 
-    // Users can be of type User or Type Technician, this Array list Stores Both Polymorphically
+    // Users can be of type User or Type Technician, this ArrayList stores both
     // The Initial Values are hardcoded as per specification
     private ArrayList<User> users = new ArrayList<>();
-
-
 
     public Main(){
         createTechnicians();
@@ -25,27 +25,17 @@ public class Main {
     public void initialScreen(){
 
         System.out.println("What would you like to do?");
-        System.out.println("1 - Existing user login");
-        System.out.println("2 - Create new user");
+        int choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Exit Program"});
 
-        String choice = sc.nextLine();
-
-        switch (choice){
-            case "1":
-                loginScreen();
-                break;
-            case "2":
-                newUserScreen();
-                break;
-            default:
-                System.out.println("Please enter only an integer");
+        switch (choice) {
+            case 1 -> loginScreen();
+            case 2 -> newUserScreen();
+            case 3 -> System.out.println("Shutting down!!!");
+            default -> {
+                System.out.println("Please enter a valid choice integer only");
                 initialScreen();
-
-
+            }
         }
-
-
-
     }
 
     // screen for creating new users
@@ -68,7 +58,7 @@ public class Main {
         System.out.println("Please enter your phone number");
         phoneNumber = this.sc.nextLine();
 
-        while (passwordMatch == false){
+        while (!passwordMatch){
             System.out.println("Please enter a password");
             password = this.sc.nextLine();
             System.out.println("Please re-enter your password");
@@ -81,17 +71,10 @@ public class Main {
                 System.out.println("Passwords did not match");
             }
         }
-
-
-
-
     }
 
     // login screen for existing users
     public void loginScreen() {
-        // boolean keeps track of if it is user vs tech signing in
-        boolean loginSuccess = false;
-
         String email;
         String password;
         System.out.println("*****************");
@@ -105,48 +88,92 @@ public class Main {
         // loops through users in search of match.
         for (User u : users) {
             if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
-                loginSuccess = true;
-                printMenu(u instanceof Technician); // determines if the user is a technician dynamically
+                currentUser = u;
+                printMenu(); // determines if the user is a technician dynamically
                 System.out.println("login success");
+                printUserWelcome();
+                return;
             }
         }
 
-        if(!loginSuccess){
-            System.out.println("Email and password do not match");
-            initialScreen();
+        // only reached if unsuccessful in login attempt
+        System.out.println("You could not be logged in");
+        initialScreen();
+    }
+
+    private void printLogoutOption(){
+        System.out.println("-1: Logout");
+    }
+
+    private void printUserWelcome(){
+        System.out.println("*****************");
+        System.out.println("Welcome " + currentUser.getName());
+    }
+
+    /**
+     * prints menu based on users type
+     * if the user is a technician they will be shown the technicians menu
+     * otherwise a user will see the users menu
+     */
+    public void printMenu(){
+        if (currentUser instanceof Technician){
+            technicianMenu();
+        } else {
+            userMenu();
         }
     }
 
-    // prints menu depending on boolean
-    // if true print technician menu
-    // if false print user menu
-    public void printMenu(boolean isTechnician){
+    private void userMenu() {
         // options for users:
         // submit ticket
         // view my tickets
+        System.out.println("User Menu");
+        printLogoutOption(); // -1
+        int choice = getMenuChoice(new String[] {"Submit Ticket", "View My Tickets"});
+        switch (choice) {
+            case -1 -> logoutUser();
+            case 1 -> System.out.println("submit ticket");
+            case 2 -> System.out.println("view my ticket");
+            default -> {
+                System.out.println("Please enter a valid choice integer only");
+                userMenu();
+            }
+        }
+    }
 
+    private int getMenuChoice(String[] menuOptions) {
+        for (int i = 0; i < menuOptions.length; i++){
+            System.out.printf("%d. %s%n",i +1, menuOptions[i]);
+        }
+        int choice = Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors
+        return choice;
+    }
+
+    private void technicianMenu() {
         // options for technicians:
         // view assigned tickets
         //      -> change status
         //      -> change severity
         // view all closed and archived tickets
+        System.out.println("Technician Menu");
+        printLogoutOption(); // -1
+        int choice = getMenuChoice(new String[] {"View Assigned Tickets", "View Closed and Archived Tickets"});
 
-        // these arrays create the menu options for the user
-        String userOptions[] = {"Submit Ticket", "View My Tickets"};
-        String techOptions[] = {"View Assigned Tickets", "View Closed and Archived Tickets"};
-
-        System.out.println("*****************");
-        if (isTechnician == false){
-            System.out.println("User Menu");
-            for (int i =0; i < userOptions.length; i++){
-                System.out.printf("%d. %s%n",i +1, userOptions[i]);
-            }
-        } else {
-            System.out.println("Technician Menu");
-            for (int i =0; i < techOptions.length; i++){
-                System.out.printf("%d. %s%n",i+ 1, techOptions[i]);
+        switch (choice) {
+            case -1 -> logoutUser();
+            case 1 -> System.out.println("View Assigned Tickets");
+            case 2 -> System.out.println("View Closed and Archived Tickets");
+            default -> {
+                System.out.println("Please enter a valid choice integer only");
+                technicianMenu();
             }
         }
+    }
+
+    private void logoutUser() {
+        System.out.println("Logging out!!!");
+        initialScreen();
+        currentUser = null; //clear current user var
     }
 
     // hardcoded as per assignment spec
