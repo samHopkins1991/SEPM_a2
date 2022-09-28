@@ -25,16 +25,12 @@ public class Main {
     public void initialScreen(){
 
         System.out.println("What would you like to do?");
-        System.out.println("1 - Existing user login");
-        System.out.println("2 - Create new user");
-        System.out.println("5 - Exit the program");
-
-        String choice = sc.nextLine();
+        int choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Exit Program"});
 
         switch (choice) {
-            case "1" -> loginScreen();
-            case "2" -> newUserScreen();
-            case "5" -> System.out.println("Shutting down!!!!");
+            case 1 -> loginScreen();
+            case 2 -> newUserScreen();
+            case 3 -> System.out.println("Shutting down!!!");
             default -> {
                 System.out.println("Please enter a valid choice integer only");
                 initialScreen();
@@ -132,9 +128,10 @@ public class Main {
         // submit ticket
         // view my tickets
         System.out.println("User Menu");
-        printLogoutOption();
+        printLogoutOption(); // -1
         int choice = getMenuChoice(new String[] {"Submit Ticket", "View My Tickets"});
         switch (choice) {
+            case -1 -> logoutUser();
             case 1 -> System.out.println("submit ticket");
             case 2 -> System.out.println("view my ticket");
             default -> {
@@ -148,13 +145,8 @@ public class Main {
         for (int i = 0; i < menuOptions.length; i++){
             System.out.printf("%d. %s%n",i +1, menuOptions[i]);
         }
-        int choice = sc.nextInt();
-        if(choice == -1){
-            logoutUser();
-        } else {
-            return choice;
-        }
-        return 0;
+        int choice = Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors
+        return choice;
     }
 
     private void technicianMenu() {
@@ -164,10 +156,11 @@ public class Main {
         //      -> change severity
         // view all closed and archived tickets
         System.out.println("Technician Menu");
-        printLogoutOption();
+        printLogoutOption(); // -1
         int choice = getMenuChoice(new String[] {"View Assigned Tickets", "View Closed and Archived Tickets"});
 
         switch (choice) {
+            case -1 -> logoutUser();
             case 1 -> System.out.println("View Assigned Tickets");
             case 2 -> System.out.println("View Closed and Archived Tickets");
             default -> {
