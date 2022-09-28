@@ -28,14 +28,22 @@ public class Main {
         int choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Forgot My Password", "Exit Program"});
 
         switch (choice) {
-            case 1 -> loginScreen();
-            case 2 -> newUserScreen();
-            case 3 -> resetForgottenPassword();
-            case 4 -> System.out.println("Shutting down!!!");
-            default -> {
+            case 1:
+                loginScreen();
+                break;
+            case 2:
+                newUserScreen();
+                break;
+            case 3:
+                resetForgottenPassword();
+                break;
+            case 4:
+                System.out.println("Shutting down!!!");
+                break;
+            default:
                 System.out.println("Please enter a valid choice integer only");
                 initialScreen();
-            }
+                break;
         }
     }
 
@@ -174,13 +182,19 @@ public class Main {
         printLogoutOption(); // -1
         int choice = getMenuChoice(new String[] {"Submit Ticket", "View My Tickets"});
         switch (choice) {
-            case -1 -> logoutUser();
-            case 1 -> System.out.println("submit ticket");
-            case 2 -> System.out.println("view my ticket");
-            default -> {
+            case -1:
+                logoutUser();
+                break;
+            case 1:
+                System.out.println("submit ticket");
+                break;
+            case 2:
+                System.out.println("view my ticket");
+                break;
+            default:
                 System.out.println("Please enter a valid choice integer only");
                 userMenu();
-            }
+                break;
         }
     }
 
@@ -203,13 +217,19 @@ public class Main {
         int choice = getMenuChoice(new String[] {"View Assigned Tickets", "View Closed and Archived Tickets"});
 
         switch (choice) {
-            case -1 -> logoutUser();
-            case 1 -> System.out.println("View Assigned Tickets");
-            case 2 -> System.out.println("View Closed and Archived Tickets");
-            default -> {
+            case -1:
+                logoutUser();
+                break;
+            case 1:
+                System.out.println("View Assigned Tickets");
+                break;
+            case 2:
+                System.out.println("View Closed and Archived Tickets");
+                break;
+            default:
                 System.out.println("Please enter a valid choice integer only");
                 technicianMenu();
-            }
+                break;
         }
     }
 
