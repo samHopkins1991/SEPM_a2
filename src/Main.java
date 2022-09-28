@@ -7,6 +7,12 @@ public class Main {
     //Test current user logged.
     private User currentUser;
     private final Scanner sc;
+    
+    
+    //Req'd variables for passwordCheck function
+    int passwordLength = 20;
+    int capChars, lowChars, digits = 0;
+    char ch;
 
     // Users can be of type User or Type Technician, this ArrayList stores both
     // The Initial Values are hardcoded as per specification
@@ -68,16 +74,59 @@ public class Main {
     private void resetUserPasswordDialog(User user) {
         boolean successful = false;
         while(!successful){
+            System.out.println("Please enter a password which is at least 20 alphanumeric characters.\n");
             System.out.print("Enter New Password: ");
-            String p1 = sc.nextLine(); // TODO validate password
+            String p1 = sc.nextLine(); // Completed.
+            passwordReqCheck(p1); //as below
             System.out.print("Confirm New Password: ");
             String p2 = sc.nextLine();
 
             if(p1.equals(p2)){
+                //added validation on success for the user to know it worked. Return to initial screen if no match.
+                System.out.println("Password Changed Successfully.");
                 user.setPassword(p1);
                 successful = true;
+            } else {
+                System.out.println("Passwords entered do not match, please try again.");
+                initialScreen();
             }
         }
+    }
+    
+    
+    //function to validate strength of password
+    private void passwordReqCheck(String p1) {
+        
+        //size check, currently returning to menu for user to try subission again
+        int sizeCheck = p1.length();
+        if(sizeCheck<passwordLength) {
+            System.out.println("\nThe password does not meet the length requirements. Please resubmit your password reset request.\n");
+            initialScreen();
+        }
+        else
+        //check to see if the password contains one or more of the required characters.
+        {
+            for (int i = 0; i < passwordLength; i++)
+            {
+                ch = p1.charAt(i);
+                if(Character.isUpperCase(ch))
+                    capChars = 1;
+                else if(Character.isLowerCase(ch))
+                    lowChars = 1;
+                else if(Character.isDigit(ch))
+                    digits = 1;
+                
+            }
+        }
+        //returns success or failure, failure returns to initial screen to resubmit the request
+        if(capChars==1 && lowChars==1 && digits==1) {
+            System.out.println("\nPassword meets requirements.\n");
+        }
+        else {
+            System.out.println("\nThe Password is weak, please try again.\n ");
+            initialScreen();
+        }
+        
     }
 
 
