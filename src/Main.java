@@ -25,18 +25,61 @@ public class Main {
     public void initialScreen(){
 
         System.out.println("What would you like to do?");
-        int choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Exit Program"});
+        int choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Forgot My Password", "Exit Program"});
 
         switch (choice) {
             case 1 -> loginScreen();
             case 2 -> newUserScreen();
-            case 3 -> System.out.println("Shutting down!!!");
+            case 3 -> resetForgottenPassword();
+            case 4 -> System.out.println("Shutting down!!!");
             default -> {
                 System.out.println("Please enter a valid choice integer only");
                 initialScreen();
             }
         }
     }
+
+    private void resetForgottenPassword() {
+        // asks the user to enter all their current details and if they match a user then the password reset action will occur,
+
+        System.out.print("Please enter your email: ");
+        String email = sc.nextLine();
+
+        System.out.print("Please enter your name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Please enter your phone number: ");
+        String phone = sc.nextLine();
+
+        for (User user: users) {
+            if(user.getEmail().equals(email)) {
+                if(!user.getName().equals(name)){ return; }
+                if(!user.getPhoneNumber().equals(phone)){ return; }
+                // user matches show reset new password dialog
+                resetUserPasswordDialog(user);
+                initialScreen();
+            }
+        }
+
+        // didnt return printing that no user was found
+        System.out.println("No user with that email exists, perhaps you should create one");
+    }
+
+    private void resetUserPasswordDialog(User user) {
+        boolean successful = false;
+        while(!successful){
+            System.out.print("Enter New Password: ");
+            String p1 = sc.nextLine(); // TODO validate password
+            System.out.print("Confirm New Password: ");
+            String p2 = sc.nextLine();
+
+            if(p1.equals(p2)){
+                user.setPassword(p1);
+                successful = true;
+            }
+        }
+    }
+
 
     // screen for creating new users
     // adds new users to users arraylist
