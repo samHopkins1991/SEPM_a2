@@ -29,10 +29,10 @@ public class Main {
     public void mainMenu(){
 
         System.out.println("What would you like to do?");
-        int choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Forgot My Password", "Exit Program"});
+        int choice = 0;
 
-        // loops until program is quit
-        while(true){
+        while(choice != 4){
+            choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Forgot My Password", "Exit Program"});
             switch (choice) {
                 case 1:
                     loginScreen();
@@ -47,10 +47,11 @@ public class Main {
                     return;
                 default:
                     System.out.println("Please enter a valid choice integer only");
-                    mainMenu();
                     break;
             }
         }
+
+
     }
 
     private void resetForgottenPassword() {
@@ -71,7 +72,7 @@ public class Main {
                 if(!user.getPhoneNumber().equals(phone)){ return; }
                 // user matches show reset new password dialog
                 resetUserPasswordDialog(user);
-                mainMenu();
+                return; // return to ensure last code is not run.
             }
         }
 
@@ -94,7 +95,6 @@ public class Main {
                 successful = true;
             } else {
                 System.out.println("Passwords entered do not match, please try again.");
-                mainMenu();
             }
         }
     }
@@ -121,13 +121,11 @@ public class Main {
 
         //size check, currently returning to menu for user to try subission again
         int sizeCheck = p1.length();
-        if(sizeCheck< PASSWORD_LENGTH) {
-            System.out.println("\nThe password does not meet the length requirements. Please resubmit your password reset request.\n");
-            mainMenu();
+        if(sizeCheck < PASSWORD_LENGTH) {
+            System.out.println("\nThe password does not meet the length requirements.");
+            return false;
         }
-        else
-        //check to see if the password contains one or more of the required characters.
-        {
+        else { //check to see if the password contains one or more of the required characters.
             for (int i = 0; i < PASSWORD_LENGTH; i++)
             {
                 ch = p1.charAt(i);
@@ -142,12 +140,10 @@ public class Main {
         }
         //returns success or failure, failure returns to initial screen to resubmit the request
         if(capChars==1 && lowChars==1 && digits==1) {
-            System.out.println("\nPassword meets requirements.\n");
             return true;
         }
         else {
             System.out.println("\nThe Password is weak, please try again.\n ");
-            mainMenu();
             return false;
         }
         
@@ -173,18 +169,19 @@ public class Main {
         System.out.print("Please enter your phone number: ");
         phoneNumber = this.sc.nextLine();
 
-
+        // gets a validated password
+        password = getValidPassword();
 
         while (!passwordMatch){
-            password = getValidPassword();
             System.out.print("Please confirm your password: ");
             if (password.equals(this.sc.nextLine())){
                 passwordMatch = true;
                 User u = new User(name, email, phoneNumber, password);
                 users.add(u);
-                mainMenu();
-            } else {
-                System.out.println("Passwords did not match!");
+                System.out.printf("User %s, was added! %n", u.getName());
+            }
+            else{
+                System.out.println("Passwords do not match!");
             }
         }
     }
@@ -196,25 +193,24 @@ public class Main {
         System.out.println("*****************");
         System.out.println("LOGIN");
         System.out.println("*****************\n");
-        System.out.println("please enter your email");
+        System.out.print("please enter your email: ");
         email = sc.nextLine();
-        System.out.println("Please enter your password");
+        System.out.print("Please enter your password: ");
         password = sc.nextLine();
 
         // loops through users in search of match.
         for (User u : users) {
             if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
                 currentUser = u;
-                printMenu(); // determines if the user is a technician dynamically
                 System.out.println("login success");
                 printUserWelcome();
+                printMenu(); // determines if the user is a technician dynamically
                 return;
             }
         }
 
         // only reached if unsuccessful in login attempt
         System.out.println("You could not be logged in");
-        mainMenu();
     }
 
     private void printLogoutOption(){
@@ -244,22 +240,24 @@ public class Main {
         // submit ticket
         // view my tickets
         System.out.println("User Menu");
-        printLogoutOption(); // -1
-        int choice = getMenuChoice(new String[] {"Submit Ticket", "View My Tickets"});
-        switch (choice) {
-            case -1:
-                logoutUser();
-                break;
-            case 1:
-                System.out.println("submit ticket");
-                break;
-            case 2:
-                System.out.println("view my ticket");
-                break;
-            default:
-                System.out.println("Please enter a valid choice integer only");
-                userMenu();
-                break;
+        int choice = 0;
+
+        while(true){ // returns if a valid choice is given after running the appropriate functions
+            printLogoutOption(); // -1
+            choice = getMenuChoice(new String[] {"Submit Ticket", "View My Tickets"});
+            switch (choice) {
+                case -1:
+                    logoutUser();
+                    return;
+                case 1:
+                    System.out.println("submit ticket");
+                    break;
+                case 2:
+                    System.out.println("view my tickets");
+                    break;
+                default:
+                    System.out.println("Please enter a valid choice integer only");
+            }
         }
     }
 
@@ -267,8 +265,7 @@ public class Main {
         for (int i = 0; i < menuOptions.length; i++){
             System.out.printf("%d. %s%n",i +1, menuOptions[i]);
         }
-        int choice = Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors
-        return choice;
+        return Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors;
     }
 
     private void technicianMenu() {
@@ -281,26 +278,26 @@ public class Main {
         printLogoutOption(); // -1
         int choice = getMenuChoice(new String[] {"View Assigned Tickets", "View Closed and Archived Tickets"});
 
-        switch (choice) {
-            case -1:
-                logoutUser();
-                break;
-            case 1:
-                System.out.println("View Assigned Tickets");
-                break;
-            case 2:
-                System.out.println("View Closed and Archived Tickets");
-                break;
-            default:
-                System.out.println("Please enter a valid choice integer only");
-                technicianMenu();
-                break;
+        while(true){
+            switch (choice) {
+                case -1:
+                    logoutUser();
+                    return;
+                case 1:
+                    System.out.println("View Assigned Tickets");
+                    return;
+                case 2:
+                    System.out.println("View Closed and Archived Tickets");
+                    return;
+                default:
+                    System.out.println("Please enter a valid choice integer only");
+            }
         }
+
     }
 
     private void logoutUser() {
         System.out.println("Logging out!!!");
-        mainMenu();
         currentUser = null; //clear current user var
     }
 
