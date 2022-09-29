@@ -1,5 +1,6 @@
 //this class will be the main driver, running login and menu work
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
@@ -267,6 +268,59 @@ public class Main {
         return new Ticket(Severity.valueOf(severity), description);
     }
 
+    // assigns ticket to tech with least ammount of current tickets
+    // if there is a tie, it is random.
+    public void assignTicket(Ticket ticket){
+        // tracks which level tech needs to be for ticket
+        int techLvl;
+        // array of technicians at ticket level
+        ArrayList<Technician> tch = new ArrayList<>();
+        ArrayList<Technician> techsWithLowestTickets = new ArrayList<>();
+
+        // if ticket is high - goes to level 2
+        if (ticket.getSeverity() == Severity.HIGH){
+            techLvl = 2;
+        } else {
+            techLvl = 1;
+        }
+        // adds technicians to tch array
+        for (User u: users) {
+            if (u instanceof Technician && ((Technician) u).getLevel() == techLvl) {
+                tch.add((Technician) u);
+            }
+        }
+        // loops through array of techs - searching for tech with the lowest tickets
+        for (int i = 0; i < tch.size(); i ++){
+            // if beginning of array populate with first technician
+            if (i == 0) {
+                techsWithLowestTickets.add(tch.get(i));
+            }
+            // if equal no. of tickets, add to techs-with-the-lowest-ticks array
+            if (tch.get(i).getNumberOfAssignedTickets() == techsWithLowestTickets.get(0).getNumberOfAssignedTickets()){
+                techsWithLowestTickets.add(tch.get(i));
+
+                // if tech[i].numtickets is less than the first entry of techswithlowestticks (entire array will be the same)
+                // then empty array and fill with current tech
+            } else if (tch.get(i).getNumberOfAssignedTickets() < techsWithLowestTickets.get(0).getNumberOfAssignedTickets()) {
+                techsWithLowestTickets.clear();
+                techsWithLowestTickets.add(tch.get(i));
+            }
+        }
+
+        // if only 1 tech in array - assign ticket to them
+        if (techsWithLowestTickets.size() == 1) {
+            techsWithLowestTickets.get(0).setAssignedTickets(ticket);
+
+            // if more than one pick random
+        } else {
+            Random rand = new Random();
+            int numTechs = techsWithLowestTickets.size();
+            int randomTechIndex = rand.nextInt(numTechs);
+
+            techsWithLowestTickets.get(randomTechIndex).setAssignedTickets(ticket);
+        }
+    }
+
     public void printMenu(){
         if (currentUser instanceof Technician){
             technicianMenu();
@@ -292,8 +346,8 @@ public class Main {
                 case 1:
                     System.out.println("submit ticket");
                     Ticket ticket = createTicket();
+                    assignTicket(ticket);
 
-                    // ToDo assign ticket to tech with the lease number of ticket.
                     //Only assign ticket if not "null" in case the user select "cancel ticket"
                     if (ticket != null){
                         //assign ticket to current user
@@ -316,11 +370,28 @@ public class Main {
                     viewUserTickets();
 
                     break;
+                //ToDo take this out for final product
+                // hidden function for showing ticket assignments -
+                // have left in for when we reassign tickets
+                case 3:
+                    testTickets();
+                    break;
                 default:
                     System.out.println("Please enter a valid choice integer only");
             }
         }
     }
+
+    //testing function for ticket assignment.. have left in for when we
+    // change severity and reassign tickets
+    public void testTickets(){
+        for (User u: users){
+            if (u instanceof Technician){
+                System.out.printf("Tech: %s %nLevel: %d%nTicket: %s%n",((Technician) u).getName(), (((Technician) u).getLevel()), ((Technician) u).getAssignedTickets().toString());
+            }
+        }
+    }
+
     //Display user created ticket that the status is open.
     private void viewUserTickets() {
         System.out.println("Current user tickets ");
