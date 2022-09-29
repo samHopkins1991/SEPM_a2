@@ -1,6 +1,7 @@
 //this class will be the main driver, running login and menu work
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Random;
 
 public class Main {
 
@@ -267,6 +268,57 @@ public class Main {
         return new Ticket(Severity.valueOf(severity), description);
     }
 
+    public void assignTicket(Ticket ticket){
+        // tracks which level tech needs to be for ticket
+        int techLvl;
+        // array of technicians at ticket level
+        ArrayList<Technician> tch = new ArrayList<>();
+        ArrayList<Technician> techsWithLowestTickets = new ArrayList<>();
+
+        // if ticket is high - goes to level 2
+        if (ticket.getSeverity() == Severity.HIGH){
+            techLvl = 2;
+        } else {
+            techLvl = 1;
+        }
+        // adds technicians to tch array
+        for (User u: users) {
+            if (u instanceof Technician && ((Technician) u).getLevel() == techLvl) {
+                tch.add((Technician) u);
+            }
+        }
+        // loops through array of techs - searching for tech with the lowest tickets
+        for (int i = 0; i < tch.size(); i ++){
+            // if beginning of array populate with first technician
+            if (i == 0) {
+                techsWithLowestTickets.add(tch.get(i));
+            }
+            // if equal no. of tickets, add to techs-with-the-lowest-ticks array
+            if (tch.get(i).getNumberOfAssignedTickets() == techsWithLowestTickets.get(0).getNumberOfAssignedTickets()){
+                techsWithLowestTickets.add(tch.get(i));
+
+            // if tech[i].numtickets is less than the first entry of techswithlowestticks (entire array will be the same)
+            // then empty array and fill with current tech
+            } else if (tch.get(i).getNumberOfAssignedTickets() < techsWithLowestTickets.get(0).getNumberOfAssignedTickets()) {
+                techsWithLowestTickets.clear();
+                techsWithLowestTickets.add(tch.get(i));
+            }
+        }
+
+        // if only 1 tech in array - assign ticket to them
+        if (techsWithLowestTickets.size() == 1) {
+            techsWithLowestTickets.get(0).setAssignedTickets(ticket);
+
+        // if more than one pick random
+        } else {
+            Random rand = new Random();
+            int numTechs = techsWithLowestTickets.size();
+            int randomTechIndex = rand.nextInt(numTechs);
+
+            techsWithLowestTickets.get(randomTechIndex).setAssignedTickets(ticket);
+        }
+    }
+
     public void printMenu(){
         if (currentUser instanceof Technician){
             technicianMenu();
@@ -295,8 +347,20 @@ public class Main {
                 case 2:
                     System.out.println("view my tickets");
                     break;
+                case 3:
+                    //testing Tickets
+                    testTickets();
+                    break;
                 default:
                     System.out.println("Please enter a valid choice integer only");
+            }
+        }
+    }
+
+    public void testTickets(){
+        for (User u: users){
+            if (u instanceof Technician){
+                System.out.printf("Tech: %s %nLevel: %d%nTicket: %s%n",((Technician) u).getName(), (((Technician) u).getLevel()), ((Technician) u).getAssignedTickets().toString());
             }
         }
     }
@@ -304,7 +368,8 @@ public class Main {
     private void createAndAssignTicket() {
         System.out.println("submit ticket");
         Ticket ticket = createTicket();
-        // ToDo assign ticket to tech with the lease number of ticket.
+        assignTicket(ticket);
+
         //Only assign ticket if not "null" in case the user select "cancel ticket"
         if (ticket != null){
             //Call your assign ticket method here
@@ -366,14 +431,16 @@ public class Main {
     public void createTechnicians(){
         Technician a = new Technician("Harry Styles", "harrystyles@gmail.com", "04123456789", "password123", 1);
         Technician b = new Technician ("Niall Horan", "niallhoran@gmail.com", "04123456789", "password123", 1);
-        Technician c = new Technician("Louis Tomlinson", "louistomlinson@gmail.com", "04123456789", "password123", 2);
-        Technician d = new Technician("Zayn Malik", "zaynmalik@gmail.com", "04123456789", "password123", 2);
+        Technician c = new Technician ("Liam Payne", "liampayne@gmail.com", "04123456789", "password123", 1);
+        Technician d = new Technician("Louis Tomlinson", "louistomlinson@gmail.com", "04123456789", "password123", 2);
+        Technician e = new Technician("Zayn Malik", "zaynmalik@gmail.com", "04123456789", "password123", 2);
 
         // adds technicians to arraylist
         users.add(a);
         users.add(b);
         users.add(c);
         users.add(d);
+        users.add(e);
 
     }
     // hardcoding users for quick login for testing
