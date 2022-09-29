@@ -290,21 +290,7 @@ public class Main {
                     logoutUser();
                     return;
                 case 1:
-                    System.out.println("submit ticket");
-                    Ticket ticket = createTicket();
-                    // ToDo assign ticket to tech with the lease number of ticket.
-                    //Only assign ticket if not "null" in case the user select "cancel ticket"
-                    if (ticket != null){
-                        //Call your assign ticket method here
-
-//                        System.out.println("Ticket Num : " + ticket.getTicketNumber());
-//                        System.out.println("Ticket Severity : " + ticket.getSeverity());
-//                        System.out.println("Ticket Status : " + ticket.getStatus());
-//                        System.out.println("Ticket description : " + ticket.getDescription());
-                    }
-
-
-
+                    createAndAssignTicket();
                     break;
                 case 2:
                     System.out.println("view my tickets");
@@ -312,6 +298,21 @@ public class Main {
                 default:
                     System.out.println("Please enter a valid choice integer only");
             }
+        }
+    }
+
+    private void createAndAssignTicket() {
+        System.out.println("submit ticket");
+        Ticket ticket = createTicket();
+        // ToDo assign ticket to tech with the lease number of ticket.
+        //Only assign ticket if not "null" in case the user select "cancel ticket"
+        if (ticket != null){
+            //Call your assign ticket method here
+
+//                        System.out.println("Ticket Num : " + ticket.getTicketNumber());
+//                        System.out.println("Ticket Severity : " + ticket.getSeverity());
+//                        System.out.println("Ticket Status : " + ticket.getStatus());
+//                        System.out.println("Ticket description : " + ticket.getDescription());
         }
     }
 
