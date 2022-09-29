@@ -227,6 +227,47 @@ public class Main {
      * if the user is a technician they will be shown the technicians menu
      * otherwise a user will see the users menu
      */
+
+    //Submit ticket (Ticket creation)
+    private boolean createTicket(){
+
+        String severity = "";
+        System.out.println("Please enter severity level :");
+        int choice = 0;
+
+        while(choice < 1 || choice > 4){
+            choice = getMenuChoice(new String[] {"LOW", "MEDIUM", "HIGH", "Cancel Ticket"});
+            switch (choice) {
+                case 1:
+                    severity="LOW";
+                    break;
+                case 2:
+                    severity = "MEDIUM";
+                    break;
+                case 3:
+                    severity = "HIGH";
+                    break;
+                case 4:
+                    return false;
+                default:
+                    System.out.println("Please enter a valid choice integer only");
+                    break;
+            }
+        }
+        String description = "";
+        do{
+            System.out.print("Please enter description : ");
+            description = sc.nextLine();
+            if (description.equalsIgnoreCase("")){
+                System.out.println("Please add a description for the ticket");
+            }
+        }while (description.equals(""));
+
+
+
+       return false;
+    }
+
     public void printMenu(){
         if (currentUser instanceof Technician){
             technicianMenu();
@@ -251,6 +292,7 @@ public class Main {
                     return;
                 case 1:
                     System.out.println("submit ticket");
+                    createTicket();
                     break;
                 case 2:
                     System.out.println("view my tickets");
