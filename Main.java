@@ -229,7 +229,7 @@ public class Main {
      */
 
     //Submit ticket (Ticket creation)
-    private boolean createTicket(){
+    private Ticket createTicket(){
 
         String severity = "";
         System.out.println("Please enter severity level :");
@@ -248,7 +248,7 @@ public class Main {
                     severity = "HIGH";
                     break;
                 case 4:
-                    return false;
+                    return null;
                 default:
                     System.out.println("Please enter a valid choice integer only");
                     break;
@@ -263,9 +263,8 @@ public class Main {
             }
         }while (description.equals(""));
 
-
-
-       return false;
+        //create and return Ticket
+        return new Ticket(Severity.valueOf(severity), description);
     }
 
     public void printMenu(){
@@ -292,7 +291,13 @@ public class Main {
                     return;
                 case 1:
                     System.out.println("submit ticket");
-                    createTicket();
+                    Ticket ticket = createTicket();
+                    // ToDo assign ticket to tech with the lease number of ticket.
+                    System.out.println("Ticket Num : " + ticket.getTicketNumber());
+                    System.out.println("Ticket Severity : " + ticket.getSeverity());
+                    System.out.println("Ticket Status : " + ticket.getStatus());
+                    System.out.println("Ticket description : " + ticket.getDescription());
+
                     break;
                 case 2:
                     System.out.println("view my tickets");
