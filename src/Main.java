@@ -313,11 +313,33 @@ public class Main {
                     break;
                 case 2:
                     System.out.println("view my tickets");
+                    viewUserTickets();
+
                     break;
                 default:
                     System.out.println("Please enter a valid choice integer only");
             }
         }
+    }
+    //Display user created ticket that the status is open.
+    private void viewUserTickets() {
+        System.out.println("Current user tickets ");
+        //Get current user tickets
+        ArrayList<Ticket> currentUserTickets = currentUser.getTickets();
+        //Filter tickets that status are open
+        for (Ticket ticket:currentUserTickets) {
+            if (ticket.getStatus().equals(Status.OPEN)){
+                System.out.println("**************************");
+                System.out.println("Ticket Num : " + ticket.getTicketNumber());
+                System.out.println("Ticket Severity : " + ticket.getSeverity());
+                System.out.println("Ticket Status : " + ticket.getStatus());
+                System.out.println("Ticket description : " + ticket.getDescription());
+                System.out.println("**************************");
+
+            }
+        }
+
+
     }
 
     private int getMenuChoice(String[] menuOptions) {
