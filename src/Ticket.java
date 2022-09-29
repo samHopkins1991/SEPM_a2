@@ -3,12 +3,16 @@
 
 public class Ticket {
 
+    private  String ticketNumber;
+    public static int autoInt = 1000;
     private Status status;
     private Severity severity;
     private String description;
 
     public Ticket(Severity severity) {
         //create an open ticket by default on creation.
+
+        ticketNumber = "TN-" + autoInt++;
         this.status = Status.OPEN;
         this.severity = severity;
         this.description = "";
@@ -16,6 +20,7 @@ public class Ticket {
 
     public Ticket(Severity severity, String description) {
         //create an open ticket by default on creation.
+        this.ticketNumber = "TN-" + autoInt++;
         this.status = Status.OPEN;
         this.severity = severity;
         this.description = description;
@@ -43,6 +48,10 @@ public class Ticket {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public  String getTicketNumber() {
+        return this.ticketNumber;
     }
 }
 

@@ -227,6 +227,46 @@ public class Main {
      * if the user is a technician they will be shown the technicians menu
      * otherwise a user will see the users menu
      */
+
+    //Submit ticket (Ticket creation)
+    private Ticket createTicket(){
+
+        String severity = "";
+        System.out.println("Please enter severity level :");
+        int choice = 0;
+
+        while(choice < 1 || choice > 4){
+            choice = getMenuChoice(new String[] {"LOW", "MEDIUM", "HIGH", "Cancel Ticket"});
+            switch (choice) {
+                case 1:
+                    severity="LOW";
+                    break;
+                case 2:
+                    severity = "MEDIUM";
+                    break;
+                case 3:
+                    severity = "HIGH";
+                    break;
+                case 4:
+                    return null;
+                default:
+                    System.out.println("Please enter a valid choice integer only");
+                    break;
+            }
+        }
+        String description = "";
+        do{
+            System.out.print("Please enter description : ");
+            description = sc.nextLine();
+            if (description.equalsIgnoreCase("")){
+                System.out.println("Please add a description for the ticket");
+            }
+        }while (description.equals(""));
+
+        //create and return Ticket
+        return new Ticket(Severity.valueOf(severity), description);
+    }
+
     public void printMenu(){
         if (currentUser instanceof Technician){
             technicianMenu();
@@ -251,21 +291,67 @@ public class Main {
                     return;
                 case 1:
                     System.out.println("submit ticket");
+                    Ticket ticket = createTicket();
+
+                    // ToDo assign ticket to tech with the lease number of ticket.
+                    //Only assign ticket if not "null" in case the user select "cancel ticket"
+                    if (ticket != null){
+                        //assign ticket to current user
+                        currentUser.setTickets(ticket);
+                        //Call your assign ticket method here
+
+//                        System.out.println("Ticket Num : " + ticket.getTicketNumber());
+//                        System.out.println("Ticket Severity : " + ticket.getSeverity());
+//                        System.out.println("Ticket Status : " + ticket.getStatus());
+//                        System.out.println("Ticket description : " + ticket.getDescription());
+
+
+                    }
+
+
+
                     break;
                 case 2:
                     System.out.println("view my tickets");
+                    viewUserTickets();
+
                     break;
                 default:
                     System.out.println("Please enter a valid choice integer only");
             }
         }
     }
+    //Display user created ticket that the status is open.
+    private void viewUserTickets() {
+        System.out.println("Current user tickets ");
+        //Get current user tickets
+        ArrayList<Ticket> currentUserTickets = currentUser.getTickets();
+        //Filter tickets that status are open
+        for (Ticket ticket:currentUserTickets) {
+            if (ticket.getStatus().equals(Status.OPEN)){
+                System.out.println("**************************");
+                System.out.println("Ticket Num : " + ticket.getTicketNumber());
+                System.out.println("Ticket Severity : " + ticket.getSeverity());
+                System.out.println("Ticket Status : " + ticket.getStatus());
+                System.out.println("Ticket description : " + ticket.getDescription());
+                System.out.println("**************************");
+
+            }
+        }
+
+
+    }
 
     private int getMenuChoice(String[] menuOptions) {
         for (int i = 0; i < menuOptions.length; i++){
             System.out.printf("%d. %s%n",i +1, menuOptions[i]);
         }
-        return Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors;
+        if (sc.hasNextInt()){
+            return Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors;
+        }
+        //To consume the carry return of hasNextInt
+        sc.nextLine();
+       return 0;
     }
 
     private void technicianMenu() {

@@ -1,16 +1,20 @@
+import java.util.ArrayList;
+
 public class User {
 
     private String name;
     private String email;
     private String phoneNumber;
     private String password;
-    private Ticket[] tickets;
+    private ArrayList<Ticket> tickets;
 
     public User (String name, String email, String phoneNumber, String password){
         this.name=name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
+        //Initialise ticket array.
+        this.tickets = new ArrayList<>();
     }
 
     public String getName() {
@@ -45,12 +49,12 @@ public class User {
         this.password = password;
     }
 
-    public Ticket[] getTickets() {
+    public ArrayList<Ticket> getTickets() {
         return tickets;
     }
 
-    public void setTickets(Ticket[] tickets) {
-        this.tickets = tickets;
+    public void setTickets(Ticket tickets) {
+        this.tickets.add(tickets);
     }
 
 }
