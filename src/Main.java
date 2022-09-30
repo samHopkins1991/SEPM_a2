@@ -7,9 +7,8 @@ public class Main {
 
     //Test current user logged.
     private User currentUser;
-    private final Scanner sc;
-    
-    
+    private Scanner sc;
+
     //Req'd variables for passwordCheck function
     private final int PASSWORD_LENGTH = 20;
 
@@ -18,11 +17,15 @@ public class Main {
     private ArrayList<User> users = new ArrayList<>();
 
     public Main(){
+        initialise();
+        mainMenu();
+        System.out.println("Shutting down!!!");
+    }
+
+    private void initialise() {
         createTechnicians();
         createUsers();
         this.sc = new Scanner(System.in);
-        mainMenu();
-        System.out.println("Shutting down!!!");
     }
 
     // prints initial screen
@@ -33,26 +36,25 @@ public class Main {
         int choice = 0;
 
         while(choice != 4){
-            choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Forgot My Password", "Exit Program"});
-            switch (choice) {
-                case 1:
-                    loginScreen();
-                    break;
-                case 2:
-                    newUserScreen();
-                    break;
-                case 3:
-                    resetForgottenPassword();
-                    break;
-                case 4:
-                    return;
-                default:
-                    System.out.println("Please enter a valid choice integer only");
-                    break;
+            if(currentUser != null){
+                printMenu(); // if a user is logged in do not show the home screen
+            } else {
+                choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Exit Program"});
+                switch (choice) {
+                    case 1:
+                        loginScreen();
+                        break;
+                    case 2:
+                        newUserScreen();
+                        break;
+                    case 3:
+                        return; // exits loop then exits program
+                    default:
+                        System.out.println("Please enter a valid choice integer only");
+                        break;
+                }
             }
         }
-
-
     }
 
     private void resetForgottenPassword() {
@@ -154,6 +156,11 @@ public class Main {
     // screen for creating new users
     // adds new users to users arraylist
     public void newUserScreen(){
+
+
+        // TODO add forgot password option here
+        // resetForgottenPassword();
+
         String email;
         String name;
         String phoneNumber;
@@ -222,12 +229,6 @@ public class Main {
         System.out.println("*****************");
         System.out.println("Welcome " + currentUser.getName());
     }
-
-    /**
-     * prints menu based on users type
-     * if the user is a technician they will be shown the technicians menu
-     * otherwise a user will see the users menu
-     */
 
     //Submit ticket (Ticket creation)
     private Ticket createTicket(){
@@ -321,6 +322,11 @@ public class Main {
         }
     }
 
+    /**
+     * prints menu based on users type
+     * if the user is a technician they will be shown the technicians menu
+     * otherwise a user will see the users menu
+     */
     public void printMenu(){
         if (currentUser instanceof Technician){
             technicianMenu();
@@ -382,7 +388,7 @@ public class Main {
         }
     }
 
-    //testing function for ticket assignment.. have left in for when we
+    // testing function for ticket assignment.. have left in for when we
     // change severity and reassign tickets
     public void testTickets(){
         for (User u: users){
@@ -417,12 +423,13 @@ public class Main {
         for (int i = 0; i < menuOptions.length; i++){
             System.out.printf("%d. %s%n",i +1, menuOptions[i]);
         }
-        if (sc.hasNextInt()){
+
+        try {
             return Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors;
+        } catch (NumberFormatException e){
+            // log the error here
+            return 0;
         }
-        //To consume the carry return of hasNextInt
-        sc.nextLine();
-       return 0;
     }
 
     private void technicianMenu() {
@@ -435,22 +442,19 @@ public class Main {
         printLogoutOption(); // -1
         int choice = getMenuChoice(new String[] {"View Assigned Tickets", "View Closed and Archived Tickets"});
 
-        while(true){
-            switch (choice) {
-                case -1:
-                    logoutUser();
-                    return;
-                case 1:
-                    System.out.println("View Assigned Tickets");
-                    return;
-                case 2:
-                    System.out.println("View Closed and Archived Tickets");
-                    return;
-                default:
-                    System.out.println("Please enter a valid choice integer only");
-            }
+        switch (choice) {
+            case -1:
+                logoutUser();
+                break;
+            case 1:
+                System.out.println("View Assigned Tickets");
+                break;
+            case 2:
+                System.out.println("View Closed and Archived Tickets");
+                break;
+            default:
+                System.out.println("Please enter a valid choice integer only");
         }
-
     }
 
     private void logoutUser() {
