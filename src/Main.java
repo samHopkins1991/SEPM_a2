@@ -443,6 +443,7 @@ public class Main {
      * todo remove this function
      */
     public void testTickets(){
+        System.out.println(currentUser);
         for (User u: users){
             if (u instanceof Technician){
                 System.out.printf("Tech: %s %nLevel: %d%nTicket: %s%n",((Technician) u).getName(), (((Technician) u).getLevel()), ((Technician) u).getAssignedTickets().toString());
@@ -495,6 +496,7 @@ public class Main {
      * Displays the technicians menu
      */
     private void technicianMenu() {
+
         // options for technicians:
         // view assigned tickets
         //      -> change status
@@ -522,7 +524,8 @@ public class Main {
 
     //View Ticket assigned to Technician.
     private void viewTechTickets() {
-        ArrayList<Ticket> techTickets = currentUser.getTickets();
+
+        ArrayList<Ticket> techTickets = ((Technician)currentUser).getAssignedTickets();
         System.out.println("Tickets assigned to : "+ currentUser.getName());
 
         //Filter tickets that status are open
