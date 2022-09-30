@@ -1,62 +1,69 @@
-//this class will be the main driver, running login and menu work
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * Application driver class - runs the application and bootstraps requirements
+ * This class houses methods for menus and user logins
+ */
 public class Main {
 
-    //Test current user logged.
-    private User currentUser;
-    private final Scanner sc;
-    
-    
-    //Req'd variables for passwordCheck function
     private final int PASSWORD_LENGTH = 20;
 
-    // Users can be of type User or Type Technician, this ArrayList stores both
-    // The Initial Values are hardcoded as per specification
-    private ArrayList<User> users = new ArrayList<>();
+    private final ArrayList<User> users = new ArrayList<>(); // Users can be of type User or Type Technician
+    private User currentUser; // stores the currently logged-in user null otherwise
+    private Scanner sc;
 
     public Main(){
-        createTechnicians();
-        createUsers();
-        this.sc = new Scanner(System.in);
+        initialise();
         mainMenu();
         System.out.println("Shutting down!!!");
     }
 
-    // prints initial screen
-    // login or create user
+    /**
+     * Bootstraps the application setting up required parameters and users
+     */
+    private void initialise() {
+        createTechnicians();
+        createUsers();
+        this.sc = new Scanner(System.in);
+    }
+
+    /**
+     * prints the main menu - loads specific menus if a user is logged in
+     */
     public void mainMenu(){
 
         System.out.println("What would you like to do?");
         int choice = 0;
 
-        while(choice != 4){
-            choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Forgot My Password", "Exit Program"});
-            switch (choice) {
-                case 1:
-                    loginScreen();
-                    break;
-                case 2:
-                    newUserScreen();
-                    break;
-                case 3:
-                    resetForgottenPassword();
-                    break;
-                case 4:
-                    return;
-                default:
-                    System.out.println("Please enter a valid choice integer only");
-                    break;
+        while(true){
+            if(currentUser != null){
+                printMenu(); // if a user is logged in do not show the home screen
+            } else {
+                choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Exit Program"});
+                switch (choice) {
+                    case 1:
+                        loginMenu();
+                        break;
+                    case 2:
+                        newUserScreen();
+                        break;
+                    case 3:
+                        return; // exits loop then exits program
+                    default:
+                        System.out.println("Please enter a valid choice integer only");
+                        break;
+                }
             }
         }
-
-
     }
 
+    /**
+     * asks the user to enter all their current details
+     * if they match a user then the password reset action will occur,
+     */
     private void resetForgottenPassword() {
-        // asks the user to enter all their current details and if they match a user then the password reset action will occur,
-
         System.out.print("Please enter your email: ");
         String email = sc.nextLine();
 
@@ -70,16 +77,18 @@ public class Main {
             if(user.getEmail().equals(email)) {
                 if(!user.getName().equals(name)){ return; }
                 if(!user.getPhoneNumber().equals(phone)){ return; }
-                // user matches show reset new password dialog
-                resetUserPasswordDialog(user);
+                resetUserPasswordDialog(user); // user matches show reset new password dialog
                 return; // return to ensure last code is not run.
             }
         }
 
-        // didn't return. printing that no user was found
         System.out.println("No user with that email exists, perhaps you should create one");
     }
 
+    /**
+     * prompts the user to enter a new valid password that meets the strength requirements
+     * @param user this should be the user who will have the password changed
+     */
     private void resetUserPasswordDialog(User user) {
         boolean successful = false;
         while(!successful){
@@ -89,7 +98,6 @@ public class Main {
             String p2 = sc.nextLine();
 
             if(p1.equals(p2)){
-                //added validation on success for the user to know it worked. Return to initial screen if no match.
                 System.out.println("Password Changed Successfully.");
                 user.setPassword(p1);
                 successful = true;
@@ -114,7 +122,11 @@ public class Main {
     }
 
 
-    //function to validate strength of password
+    /**
+     * Verifies if a password is valid
+     * @param p1 the password to be validated
+     * @return true if valid, false otherwise
+     */
     private boolean isPasswordValid(String p1) {
         int capChars = 0, lowChars = 0, digits = 0; // initialization
         char ch;
@@ -122,7 +134,7 @@ public class Main {
         //size check, currently returning to menu for user to try subission again
         int sizeCheck = p1.length();
         if(sizeCheck < PASSWORD_LENGTH) {
-            System.out.println("\nThe password does not meet the length requirements.");
+            System.out.println("\n The password does not meet the length requirements.");
             return false;
         }
         else { //check to see if the password contains one or more of the required characters.
@@ -138,7 +150,9 @@ public class Main {
                 
             }
         }
-        //returns success or failure, failure returns to initial screen to resubmit the request
+
+
+        // returns success or failure, failure returns to initial screen to resubmit the request
         if(capChars==1 && lowChars==1 && digits==1) {
             return true;
         }
@@ -149,9 +163,9 @@ public class Main {
         
     }
 
-
-    // screen for creating new users
-    // adds new users to users arraylist
+    /**
+     * shows a form for creating a new user and then adds the new user to memory
+     */
     public void newUserScreen(){
         String email;
         String name;
@@ -186,8 +200,40 @@ public class Main {
         }
     }
 
-    // login screen for existing users
-    public void loginScreen() {
+
+    /**
+     * login menu shows options to continue to the login form
+     * or the forgot password form
+     */
+    private void loginMenu(){
+        int choice = 0;
+        while(choice != 3){
+            if(currentUser != null){
+                printMenu(); // if a user is logged in do not show the home screen
+            } else {
+                choice = getMenuChoice(new String[] {"Continue to login form", "I forgot my password", "Go Back"});
+                switch (choice) {
+                    case 1:
+                        showLoginForm();
+                        break;
+                    case 2:
+                        resetForgottenPassword();
+                        break;
+                    case 3:
+                        return; // goes back
+                    default:
+                        System.out.println("Please enter a valid choice integer only");
+                        break;
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Login form for existing users
+     */
+    public void showLoginForm() {
         String email;
         String password;
         System.out.println("*****************");
@@ -198,8 +244,7 @@ public class Main {
         System.out.print("Please enter your password: ");
         password = sc.nextLine();
 
-        // loops through users in search of match.
-        for (User u : users) {
+        for (User u : users) { // loops through users in search of match.
             if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
                 currentUser = u;
                 System.out.println("login success");
@@ -209,26 +254,26 @@ public class Main {
             }
         }
 
-        // only reached if unsuccessful in login attempt
-        System.out.println("You could not be logged in");
+        System.out.println("You could not be logged in"); // only reached if unsuccessful in login attempt
     }
 
-    private void printLogoutOption(){
-        System.out.println("-1: Logout");
-    }
+    /**
+     * prints the logout option - to be used in menus where the user is logged-in
+     */
+    private void printLogoutOption(){ System.out.println("-1: Logout");}
 
+    /**
+     * prints a welcome for the currently logged-in user
+     */
     private void printUserWelcome(){
         System.out.println("*****************");
         System.out.println("Welcome " + currentUser.getName());
     }
 
     /**
-     * prints menu based on users type
-     * if the user is a technician they will be shown the technicians menu
-     * otherwise a user will see the users menu
+     * Provides a form to create a new ticket
+     * @return A valid ticket or null if the creation was cancelled
      */
-
-    //Submit ticket (Ticket creation)
     private Ticket createTicket(){
 
         String severity = "";
@@ -267,6 +312,67 @@ public class Main {
         return new Ticket(Severity.valueOf(severity), description);
     }
 
+    /**
+     * assigns ticket to tech with least ammount of current tickets
+     * if there is a tie, it is random.
+     * @param ticket the ticket that will be assigned to a technician
+     */
+    public void assignTicket(Ticket ticket){
+        // tracks which level tech needs to be for ticket
+        int techLvl;
+        // array of technicians at ticket level
+        ArrayList<Technician> tch = new ArrayList<>();
+        ArrayList<Technician> techsWithLowestTickets = new ArrayList<>();
+
+        // if ticket is high - goes to level 2
+        if (ticket.getSeverity() == Severity.HIGH){
+            techLvl = 2;
+        } else {
+            techLvl = 1;
+        }
+        // adds technicians to tch array
+        for (User u: users) {
+            if (u instanceof Technician && ((Technician) u).getLevel() == techLvl) {
+                tch.add((Technician) u);
+            }
+        }
+        // loops through array of techs - searching for tech with the lowest tickets
+        for (int i = 0; i < tch.size(); i ++){
+            // if beginning of array populate with first technician
+            if (i == 0) {
+                techsWithLowestTickets.add(tch.get(i));
+            }
+            // if equal no. of tickets, add to techs-with-the-lowest-ticks array
+            if (tch.get(i).getNumberOfAssignedTickets() == techsWithLowestTickets.get(0).getNumberOfAssignedTickets()){
+                techsWithLowestTickets.add(tch.get(i));
+
+                // if tech[i].numtickets is less than the first entry of techswithlowestticks (entire array will be the same)
+                // then empty array and fill with current tech
+            } else if (tch.get(i).getNumberOfAssignedTickets() < techsWithLowestTickets.get(0).getNumberOfAssignedTickets()) {
+                techsWithLowestTickets.clear();
+                techsWithLowestTickets.add(tch.get(i));
+            }
+        }
+
+        // if only 1 tech in array - assign ticket to them
+        if (techsWithLowestTickets.size() == 1) {
+            techsWithLowestTickets.get(0).setAssignedTickets(ticket);
+
+            // if more than one pick random
+        } else {
+            Random rand = new Random();
+            int numTechs = techsWithLowestTickets.size();
+            int randomTechIndex = rand.nextInt(numTechs);
+
+            techsWithLowestTickets.get(randomTechIndex).setAssignedTickets(ticket);
+        }
+    }
+
+    /**
+     * prints menu based on users type
+     * if the user is a technician they will be shown the technicians menu
+     * otherwise a user will see the users menu
+     */
     public void printMenu(){
         if (currentUser instanceof Technician){
             technicianMenu();
@@ -275,6 +381,9 @@ public class Main {
         }
     }
 
+    /**
+     * displays the user menu
+     */
     private void userMenu() {
         // options for users:
         // submit ticket
@@ -293,12 +402,12 @@ public class Main {
                     System.out.println("submit ticket");
                     Ticket ticket = createTicket();
 
-                    // ToDo assign ticket to tech with the lease number of ticket.
                     //Only assign ticket if not "null" in case the user select "cancel ticket"
                     if (ticket != null){
                         //assign ticket to current user
                         currentUser.setTickets(ticket);
                         //Call your assign ticket method here
+                        assignTicket(ticket);
 
 //                        System.out.println("Ticket Num : " + ticket.getTicketNumber());
 //                        System.out.println("Ticket Severity : " + ticket.getSeverity());
@@ -316,12 +425,34 @@ public class Main {
                     viewUserTickets();
 
                     break;
+                //ToDo take this out for final product
+                // hidden function for showing ticket assignments -
+                // have left in for when we reassign tickets
+                case 3:
+                    testTickets();
+                    break;
                 default:
                     System.out.println("Please enter a valid choice integer only");
             }
         }
     }
-    //Display user created ticket that the status is open.
+
+    /**
+     * testing function for ticket assignment.. have left in for when we
+     * change severity and reassign tickets
+     * todo remove this function
+     */
+    public void testTickets(){
+        for (User u: users){
+            if (u instanceof Technician){
+                System.out.printf("Tech: %s %nLevel: %d%nTicket: %s%n",((Technician) u).getName(), (((Technician) u).getLevel()), ((Technician) u).getAssignedTickets().toString());
+            }
+        }
+    }
+
+    /**
+     * Display user created ticket that the status is open.
+     */
     private void viewUserTickets() {
         System.out.println("Current user tickets ");
         //Get current user tickets
@@ -342,18 +473,27 @@ public class Main {
 
     }
 
+    /**
+     * prints a list for the user to read and takes an input
+     * @param menuOptions the options to be turned into a menu list
+     * @return 0 if the option was invalid or an integer
+     */
     private int getMenuChoice(String[] menuOptions) {
         for (int i = 0; i < menuOptions.length; i++){
             System.out.printf("%d. %s%n",i +1, menuOptions[i]);
         }
-        if (sc.hasNextInt()){
+
+        try {
             return Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors;
+        } catch (NumberFormatException e){
+            // log the error here
+            return 0;
         }
-        //To consume the carry return of hasNextInt
-        sc.nextLine();
-       return 0;
     }
 
+    /**
+     * Displays the technicians menu
+     */
     private void technicianMenu() {
         // options for technicians:
         // view assigned tickets
@@ -364,45 +504,51 @@ public class Main {
         printLogoutOption(); // -1
         int choice = getMenuChoice(new String[] {"View Assigned Tickets", "View Closed and Archived Tickets"});
 
-        while(true){
-            switch (choice) {
-                case -1:
-                    logoutUser();
-                    return;
-                case 1:
-                    System.out.println("View Assigned Tickets");
-                    return;
-                case 2:
-                    System.out.println("View Closed and Archived Tickets");
-                    return;
-                default:
-                    System.out.println("Please enter a valid choice integer only");
-            }
+        switch (choice) {
+            case -1:
+                logoutUser();
+                break;
+            case 1:
+                System.out.println("View Assigned Tickets");
+                break;
+            case 2:
+                System.out.println("View Closed and Archived Tickets");
+                break;
+            default:
+                System.out.println("Please enter a valid choice integer only");
         }
-
     }
 
+    /**
+     * logs out the current user if one is logged in
+     */
     private void logoutUser() {
         System.out.println("Logging out!!!");
         currentUser = null; //clear current user var
     }
 
-    // hardcoded as per assignment spec
-    // creates technicians at beginning of application
+    /**
+     * creates and adds technicians to the users array
+     */
     public void createTechnicians(){
         Technician a = new Technician("Harry Styles", "harrystyles@gmail.com", "04123456789", "password123", 1);
         Technician b = new Technician ("Niall Horan", "niallhoran@gmail.com", "04123456789", "password123", 1);
         Technician c = new Technician("Louis Tomlinson", "louistomlinson@gmail.com", "04123456789", "password123", 2);
         Technician d = new Technician("Zayn Malik", "zaynmalik@gmail.com", "04123456789", "password123", 2);
-
+        Technician e = new Technician ("Liam Payne", "liampayne@gmail.com", "04123456789", "password123", 1);
         // adds technicians to arraylist
         users.add(a);
         users.add(b);
         users.add(c);
         users.add(d);
+        users.add(e);
 
     }
-    // hardcoding users for quick login for testing
+
+    /**
+     * creates and adds users for testing purposes
+     * todo remove in production
+     */
     public void createUsers(){
         User a = new User("Sam", "Sam","04123456789", "Sam");
         User b = new User("Harley", "Harley","04123456789", "Harley");
@@ -418,6 +564,10 @@ public class Main {
         users.add(e);
     }
 
+    /**
+     * runs the application
+     * @param args an array or program arguements
+     */
     public static void main(String[] args) {
         new Main();
     }
