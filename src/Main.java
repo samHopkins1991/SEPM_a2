@@ -346,13 +346,13 @@ public class Main {
                 case 1:
                     System.out.println("submit ticket");
                     Ticket ticket = createTicket();
-                    assignTicket(ticket);
 
                     //Only assign ticket if not "null" in case the user select "cancel ticket"
                     if (ticket != null){
                         //assign ticket to current user
                         currentUser.setTickets(ticket);
                         //Call your assign ticket method here
+                        assignTicket(ticket);
 
 //                        System.out.println("Ticket Num : " + ticket.getTicketNumber());
 //                        System.out.println("Ticket Severity : " + ticket.getSeverity());
