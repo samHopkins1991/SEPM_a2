@@ -8,7 +8,7 @@ import java.util.Scanner;
  */
 public class Main {
 
-    private final int PASSWORD_LENGTH = 20;
+    private final int MIN_PASSWORD_LENGTH = 20;
 
     private final ArrayList<User> users = new ArrayList<>(); // Users can be of type User or Type Technician
     private User currentUser; // stores the currently logged-in user null otherwise
@@ -133,27 +133,27 @@ public class Main {
 
         //size check, currently returning to menu for user to try subission again
         int sizeCheck = p1.length();
-        if(sizeCheck < PASSWORD_LENGTH) {
+        if(sizeCheck < MIN_PASSWORD_LENGTH) {
             System.out.println("\n The password does not meet the length requirements.");
             return false;
         }
         else { //check to see if the password contains one or more of the required characters.
-            for (int i = 0; i < PASSWORD_LENGTH; i++)
+            for (int i = 0; i < p1.length(); i++)
             {
                 ch = p1.charAt(i);
                 if(Character.isUpperCase(ch))
-                    capChars = 1;
+                    capChars += 1;
                 else if(Character.isLowerCase(ch))
-                    lowChars = 1;
+                    lowChars += 1;
                 else if(Character.isDigit(ch))
-                    digits = 1;
+                    digits += 1;
                 
             }
         }
 
 
         // returns success or failure, failure returns to initial screen to resubmit the request
-        if(capChars==1 && lowChars==1 && digits==1) {
+        if(capChars >= 1 && lowChars >= 1 && digits >= 1) {
             return true;
         }
         else {
