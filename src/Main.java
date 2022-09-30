@@ -116,7 +116,7 @@ public class Main {
             System.out.print("Enter a valid Password: ");
             String p1 = sc.nextLine();
             if(isPasswordValid(p1)){
-               return p1;
+                return p1;
             }
         }
     }
@@ -131,7 +131,7 @@ public class Main {
         int capChars = 0, lowChars = 0, digits = 0; // initialization
         char ch;
 
-        //size check, currently returning to menu for user to try subission again
+        //size check, currently returning to menu for user to try submission again
         int sizeCheck = p1.length();
         if(sizeCheck < PASSWORD_LENGTH) {
             System.out.println("\n The password does not meet the length requirements.");
@@ -147,7 +147,7 @@ public class Main {
                     lowChars = 1;
                 else if(Character.isDigit(ch))
                     digits = 1;
-                
+
             }
         }
 
@@ -160,7 +160,7 @@ public class Main {
             System.out.println("\nThe Password is weak, please try again.\n ");
             return false;
         }
-        
+
     }
 
     /**
@@ -510,12 +510,31 @@ public class Main {
                 break;
             case 1:
                 System.out.println("View Assigned Tickets");
+                viewTechTickets();
                 break;
             case 2:
                 System.out.println("View Closed and Archived Tickets");
                 break;
             default:
                 System.out.println("Please enter a valid choice integer only");
+        }
+    }
+
+    //View Ticket assigned to Technician.
+    private void viewTechTickets() {
+        ArrayList<Ticket> techTickets = currentUser.getTickets();
+        System.out.println("Tickets assigned to : "+ currentUser.getName());
+
+        //Filter tickets that status are open
+        for (Ticket ticket:techTickets) {
+
+                System.out.println("**************************");
+                System.out.println("Ticket Num : " + ticket.getTicketNumber());
+                System.out.println("Ticket Severity : " + ticket.getSeverity());
+                System.out.println("Ticket Status : " + ticket.getStatus());
+                System.out.println("Ticket description : " + ticket.getDescription());
+                System.out.println("**************************");
+
         }
     }
 
