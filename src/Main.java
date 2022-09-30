@@ -35,14 +35,14 @@ public class Main {
         System.out.println("What would you like to do?");
         int choice = 0;
 
-        while(choice != 4){
+        while(choice != 3){
             if(currentUser != null){
                 printMenu(); // if a user is logged in do not show the home screen
             } else {
                 choice = getMenuChoice(new String[] {"Existing User Login", "Create New User", "Exit Program"});
                 switch (choice) {
                     case 1:
-                        loginScreen();
+                        loginMenu();
                         break;
                     case 2:
                         newUserScreen();
@@ -79,7 +79,7 @@ public class Main {
             }
         }
 
-        // didn't return. printing that no user was found
+        // didn't find a matching user. printing that no user was found
         System.out.println("No user with that email exists, perhaps you should create one");
     }
 
@@ -92,7 +92,7 @@ public class Main {
             String p2 = sc.nextLine();
 
             if(p1.equals(p2)){
-                //added validation on success for the user to know it worked. Return to initial screen if no match.
+                // added validation on success for the user to know it worked. Return to initial screen if no match.
                 System.out.println("Password Changed Successfully.");
                 user.setPassword(p1);
                 successful = true;
@@ -125,7 +125,7 @@ public class Main {
         //size check, currently returning to menu for user to try subission again
         int sizeCheck = p1.length();
         if(sizeCheck < PASSWORD_LENGTH) {
-            System.out.println("\nThe password does not meet the length requirements.");
+            System.out.println("\n The password does not meet the length requirements.");
             return false;
         }
         else { //check to see if the password contains one or more of the required characters.
@@ -141,7 +141,9 @@ public class Main {
                 
             }
         }
-        //returns success or failure, failure returns to initial screen to resubmit the request
+
+
+        // returns success or failure, failure returns to initial screen to resubmit the request
         if(capChars==1 && lowChars==1 && digits==1) {
             return true;
         }
@@ -156,11 +158,6 @@ public class Main {
     // screen for creating new users
     // adds new users to users arraylist
     public void newUserScreen(){
-
-
-        // TODO add forgot password option here
-        // resetForgottenPassword();
-
         String email;
         String name;
         String phoneNumber;
@@ -194,8 +191,38 @@ public class Main {
         }
     }
 
+
+    /**
+     * login menu shows options to continue to the login form
+     * or the forgot password form
+     */
+    private void loginMenu(){
+        int choice = 0;
+        while(choice != 3){
+            if(currentUser != null){
+                printMenu(); // if a user is logged in do not show the home screen
+            } else {
+                choice = getMenuChoice(new String[] {"Continue to login form", "I forgot my password", "Go Back"});
+                switch (choice) {
+                    case 1:
+                        showLoginForm();
+                        break;
+                    case 2:
+                        resetForgottenPassword();
+                        break;
+                    case 3:
+                        return; // goes back
+                    default:
+                        System.out.println("Please enter a valid choice integer only");
+                        break;
+                }
+            }
+        }
+    }
+
+
     // login screen for existing users
-    public void loginScreen() {
+    public void showLoginForm() {
         String email;
         String password;
         System.out.println("*****************");
