@@ -465,12 +465,13 @@ public class Main {
         Technician b = new Technician ("Niall Horan", "niallhoran@gmail.com", "04123456789", "password123", 1);
         Technician c = new Technician("Louis Tomlinson", "louistomlinson@gmail.com", "04123456789", "password123", 2);
         Technician d = new Technician("Zayn Malik", "zaynmalik@gmail.com", "04123456789", "password123", 2);
-
+        Technician e = new Technician ("Liam Payne", "liampayne@gmail.com", "04123456789", "password123", 1);
         // adds technicians to arraylist
         users.add(a);
         users.add(b);
         users.add(c);
         users.add(d);
+        users.add(e);
 
     }
     // hardcoding users for quick login for testing
