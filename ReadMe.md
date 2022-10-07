@@ -18,7 +18,8 @@ Josh Whiteford: S3550186
 
 ### About
 The project is a Java IT Ticketing application run on the console. Users can submit tickets while Technicians can view and update them.  
-
+Technicians and Staff have been hardcoded for now for easy use  
+ 
 *** 
 ***
 ### Current Version 0.1
@@ -54,7 +55,6 @@ The following features are planned to be delivered next sprint:
 - Technicians can only view open tickets assigned to them
 ***
 ## Instructions
-
 ***
 ### To open on Eclipse
 1. Download the zip file named SEPM_a2.zip and save it to the desktop
@@ -96,36 +96,43 @@ To create a new user, select "2. Create New User" and follow the promtps.
 Please note, passwords must be at least 20 characters long and contain both alha and numeric characters
 
 ### As a Staff Member
-To Submit a ticket: 
-Select 1. Submit Ticket
-Enter the severity
-Enter a description
-This will take you back to the main staff menu
-You can either submit another ticket or log out
-To logout enter "-1"
+To Submit a ticket:  
+Select 1. Submit Ticket  
+Enter the severity  
+Enter a description  
+This will take you back to the main staff menu  
+  
+You can either submit another ticket or log out  
+To logout enter "-1"  
 
 
-***TEACHING STAFF FYI***
-There is a hidden option 3 from the main menu of staff members to view all tickets
-This is so that you can easily login as a Technician and view their tickets.
-It also helps to verify the business rules of the assignment are followed when assigning tickets. 
-It will just show arrays of each Technician's Tickets. if blank, it is an empty array
-***Teaching Staff FYI*** 
+
+**TEACHING STAFF FYI**  
+
+
+There is a hidden option 3 from the main menu of staff members to view all tickets  
+This is so that you can easily login as a Technician and view their tickets.  
+It also helps to verify the business rules of the assignment are followed when assigning tickets.  
+It will just show arrays of each Technician's Tickets. if blank, it is an empty array  
+
+***Teaching Staff FYI** 
 
 ### As a Technician
-Login with the Technician details. 
-To view the technicians assigned tickets, select "1. View Assigned Tickets"
+Login with the Technician details.  
+To view the technicians assigned tickets, select "1. View Assigned Tickets"  
+  
+Please note that even though 2. View closed and Archived Tickets is shows, it is not yet functional.  
 
-Please note that even though 2. View closed and Archived Tickets is shows, it is not yet functional. 
 
 ### As either Staff or Technician
-To change your password: 
-From the login menu, select "1. Existing User Login"
-Select 2. I forgot my password
-Enter your email 
-Enter your name
-Enter your mobile number
+To change your password:   
+From the login menu, select "1. Existing User Login"  
+Select 2. I forgot my password  
+Enter your email   
+Enter your name  
+Enter your mobile number  
 
-If the details entered match a User in the system, you will be prompted to enter a new password. 
+If the details entered match a User in the system, you will be prompted to enter a new password.  
+
 
 
