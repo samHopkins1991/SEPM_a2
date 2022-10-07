@@ -115,7 +115,7 @@ This is so that you can easily login as a Technician and view their tickets.
 It also helps to verify the business rules of the assignment are followed when assigning tickets.  
 It will just show arrays of each Technician's Tickets. if blank, it is an empty array  
 
-***Teaching Staff FYI** 
+
 
 ### As a Technician
 Login with the Technician details.  
