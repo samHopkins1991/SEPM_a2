@@ -57,37 +57,42 @@ The following features are planned to be delivered next sprint:
 
 ***
 ### To open on Eclipse
-1 - Download the zip file named SEPM_a2.zip and save it to the desktop
-2 - Open Eclipse
-3 - Click File > Open Projects from File System
-4 - Click the "Archive.." button which is located next to the "Directory.." button
-5 - Select the Desktop and choose the Zip file that is saved. Click Open
-6 - Navigate to SEPM_a2/src
-7 - Right click "Main.java" and select "Run As" > "Java Application"
+1. Download the zip file named SEPM_a2.zip and save it to the desktop
+2. Open Eclipse
+3. Click File > Open Projects from File System
+4. Click the "Archive.." button which is located next to the "Directory.." button
+5. Select the Desktop and choose the Zip file that is saved. Click Open
+6. Navigate to SEPM_a2/src
+7. Right click "Main.java" and select "Run As" > "Java Application"
 
 ### Once the program is running
-The menu system of the program is run by entering the corresponding digits into the console and pressing enter.
-IE: to choose 1. Existing User Login, simply enter '1' and press enter
+The menu system of the program is run by entering the corresponding digits into the console and pressing enter.  
+IE: to choose 1. Existing User Login, simply enter '1' and press enter  
 
-You can log in 3 ways, as an existing Staff Memeber, as a Technician, Or sign up as a Staff Member
+You can log in 3 ways, as an existing Staff Memeber, as a Technician, Or sign up as a Staff Member  
 
-To log in as a Staff member, select "1. Existing User Login", and then "1. Continue to login form" and use one of the following logins: 
-Email: 			Password: 
-Sam			Sam
-Alan			Alan
-Harley			Harley
-Raf			Raf
-Josh			Josh
+To log in as a Staff member, select "1. Existing User Login", and then "1. Continue to login form" and use one of the following logins:  
 
-To login as a Technician, select "1. Existing User Login" and then "1. Continue to login form" and use one of the following logins:
-Email: 				Password:
-harrystyles@gmail.com		password123
-nialhoran@gmail.com		password123
-louistomlinson@gmail.com	password123
-zaynmalik@gmail.com		password123
-liampayne@gmail.com		password123
+Email: 			Password:  
 
-To create a new user, select "2. Create New User" and follow the promtps.
+Sam:			Sam  
+Alan:			Alan  
+Harley:			Harley  
+Raf:			Raf  
+Josh:			Josh  
+
+
+To login as a Technician, select "1. Existing User Login" and then "1. Continue to login form" and use one of the following logins:  
+
+Email: 				Password:  
+harrystyles@gmail.com:		password123  
+nialhoran@gmail.com:		password123  
+louistomlinson@gmail.com:	password123  
+zaynmalik@gmail.com:		password123  
+liampayne@gmail.com:		password123  
+
+
+To create a new user, select "2. Create New User" and follow the promtps.  
 Please note, passwords must be at least 20 characters long and contain both alha and numeric characters
 
 ### As a Staff Member
