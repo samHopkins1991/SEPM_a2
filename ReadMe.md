@@ -132,7 +132,7 @@ To change your password:
 
 If the details entered match a User in the system, you will be prompted to enter a new password.  
 ***
-###TEACHING STAFF FYI
+### TEACHING STAFF FYI
 
 
 There is a hidden option 3 from the main menu of staff members to view all tickets  
