@@ -614,7 +614,7 @@ public class Main {
             case 1:
                 System.out.println("Change Status yet to implement");
                 //ArchiveTimer(5,"TN-4000");
-                changeStatus();
+                changeStatus(ticket);
                 break;
             case 2:
                 changeSeverity(ticket);
@@ -628,7 +628,34 @@ public class Main {
 
     }
 
-    private void changeStatus() {
+    //To change ticket status
+    private void changeStatus(Ticket ticket) {
+        Status origStatus = ticket.getStatus();
+        ArrayList <Status> values = new ArrayList<>();
+
+        System.out.printf("Current status is: %s%n", ticket.getStatus().toString());
+        for (Status s: Status.values()){
+            if (ticket.getStatus() != s){
+                values.add(s);
+            }
+        }
+        System.out.println("Select a new status to set?");
+        System.out.printf("1. %s%n", values.get(0).toString());
+        System.out.printf("2. %s%n", values.get(1).toString());
+        try {
+            int choice = Integer.parseInt(sc.nextLine());
+            ticket.setStatus(values.get(choice -1));
+        } catch
+        (NumberFormatException e){
+            System.out.println("Please enter a valid choice");
+            changeSeverity(ticket);
+        }
+
+        if (ticket.getStatus() != Status.OPEN){
+            //Add to archived array.
+            ArchiveTimer(10, ticket);
+        }
+
     }
 
     //To archive after 24 hours. Testing 5 second.
@@ -643,11 +670,13 @@ public class Main {
     class ArchiveTickets extends TimerTask {
         //Inner class to add a ticket to closed array.
         ArchiveTickets(Ticket ticketNumber){
-            System.out.println("Ticket Added");
+            System.out.println("Ticket Archived");
             archivedTickets.add(ticketNumber);
         }
         public void run() {
-            System.out.println("Archived");
+            System.out.println("Archived Removed");
+
+            //ToDo implement ticket remove method
 //            System.out.println("Ticket N " + this.tempTicket);
             timer.cancel(); //Terminate the timer thread
         }
