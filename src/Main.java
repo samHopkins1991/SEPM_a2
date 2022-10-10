@@ -604,6 +604,7 @@ public class Main {
         switch (choice){
             case 1:
                 System.out.println("Change Status yet to implement");
+                break;
 
             case 2: changeSeverity(ticket);
                 break;
