@@ -14,6 +14,9 @@ public class Main {
 
     private final ArrayList<User> users = new ArrayList<>(); // Users can be of type User or Type Technician
     private User currentUser; // stores the currently logged-in user null otherwise
+
+    //Array to hold closed tickets archived for 24 hs
+    private ArrayList<Ticket> archivedTickets = new ArrayList<>();
     private Scanner sc;
 
     public Main() {
@@ -610,7 +613,8 @@ public class Main {
         switch (choice) {
             case 1:
                 System.out.println("Change Status yet to implement");
-                testTimer(5,"TN-4000");
+                //ArchiveTimer(5,"TN-4000");
+                changeStatus();
                 break;
             case 2:
                 changeSeverity(ticket);
@@ -624,23 +628,27 @@ public class Main {
 
     }
 
+    private void changeStatus() {
+    }
+
     //To archive after 24 hours. Testing 5 second.
     //Timer variable.
     Timer timer;
-    private void testTimer(int seconds, String ticketNumber) {
+    private void ArchiveTimer(int seconds, Ticket ticketNumber) {
         timer = new Timer();
         timer.schedule(new ArchiveTickets(ticketNumber), seconds * 1000);
     }
 
+
     class ArchiveTickets extends TimerTask {
-        String tempTicket;
-        ArchiveTickets(String ticketNumber){
+        //Inner class to add a ticket to closed array.
+        ArchiveTickets(Ticket ticketNumber){
             System.out.println("Ticket Added");
-            this.tempTicket = ticketNumber;
+            archivedTickets.add(ticketNumber);
         }
         public void run() {
             System.out.println("Archived");
-            System.out.println("Ticket N " + this.tempTicket);
+//            System.out.println("Ticket N " + this.tempTicket);
             timer.cancel(); //Terminate the timer thread
         }
 
