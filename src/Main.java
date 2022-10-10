@@ -26,6 +26,7 @@ public class Main {
     private void initialise() {
         createTechnicians();
         createUsers();
+        initialiseTickets();
         this.sc = new Scanner(System.in);
     }
 
@@ -510,6 +511,7 @@ public class Main {
                 break;
             case 1:
                 System.out.println("View Assigned Tickets");
+                techViewTicketsMenu();
                 break;
             case 2:
                 System.out.println("View Closed and Archived Tickets");
@@ -517,6 +519,84 @@ public class Main {
             default:
                 System.out.println("Please enter a valid choice integer only");
         }
+    }
+
+    public void techViewTicketsMenu(){
+        System.out.println("Which Ticket would you like to view?");
+        for (int i = 0; i < ((Technician) currentUser).getAssignedTickets().size(); i ++){
+            System.out.printf("%d. %s%n", i+1,((Technician) currentUser).getAssignedTickets().get(i).getTicketNumber() );
+        }
+        try{
+            int choice = Integer.parseInt(sc.nextLine()) - 1;
+            techViewTicket(choice);
+        } catch (NumberFormatException e){
+            System.out.println("Please enter a valid number");
+            techViewTicketsMenu();
+        }
+
+
+    }
+
+    public void techViewTicket (int index){
+        Ticket ticket = ((Technician)currentUser).getAssignedTickets().get(index);
+
+        System.out.println("**************************");
+        System.out.println("Ticket Num : " + ticket.getTicketNumber());
+        System.out.println("Ticket Severity : " + ticket.getSeverity());
+        System.out.println("Ticket Status : " + ticket.getStatus());
+        System.out.println("Ticket description : " + ticket.getDescription());
+        System.out.println("**************************");
+
+        int choice = getMenuChoice(new String[] {"Change Status", "Change Severity", "Exit"});
+
+        switch (choice){
+            case 1:
+                System.out.println("Change Status yet to implement");
+
+            case 2: changeSeverity(ticket);
+                    break;
+
+            case 3:
+                technicianMenu();
+                break;
+        }
+
+
+    }
+
+    public void changeSeverity(Ticket ticket){
+        Severity origSeverity = ticket.getSeverity();
+        ArrayList <Severity> values = new ArrayList<>();
+
+        System.out.printf("Current severity is: %s%n", ticket.getSeverity().toString());
+        for (Severity s: Severity.values()){
+            if (ticket.getSeverity() != s){
+                values.add(s);
+            }
+        }
+        System.out.println("What would you like to change the severity to?");
+        System.out.printf("1. %s%n", values.get(0).toString());
+        System.out.printf("2. %s%n", values.get(1).toString());
+        try {
+            int choice = Integer.parseInt(sc.nextLine());
+            ticket.setSeverity(values.get(choice -1));
+        } catch
+        (NumberFormatException e){
+            System.out.println("Please enter a valid choice");
+            changeSeverity(ticket);
+        }
+
+        if ((origSeverity == Severity.LOW || origSeverity == Severity.MEDIUM) && ticket.getSeverity() == Severity.HIGH){
+            reassignTicket(ticket);
+        } else if (origSeverity == Severity.HIGH && ticket.getSeverity() != Severity.HIGH){
+            reassignTicket(ticket);
+        }
+
+    }
+
+    public void reassignTicket(Ticket ticket){
+        assignTicket(ticket);
+        ((Technician) currentUser).removeAssignedTicket(ticket);
     }
 
     /**
@@ -563,6 +643,17 @@ public class Main {
         users.add(d);
         users.add(e);
     }
+
+    public void initialiseTickets(){
+        Ticket ticket1 = new Ticket(Severity.LOW, "test");
+        Ticket ticket2 = new Ticket(Severity.MEDIUM, "test");
+        Ticket ticket3 =  new Ticket(Severity.HIGH, "Test");
+
+        assignTicket(ticket1);
+        assignTicket(ticket2);
+        assignTicket(ticket3);
+    }
+
 
     /**
      * runs the application
