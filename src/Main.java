@@ -117,7 +117,7 @@ public class Main {
             System.out.print("Enter a valid Password: ");
             String p1 = sc.nextLine();
             if(isPasswordValid(p1)){
-               return p1;
+                return p1;
             }
         }
     }
@@ -148,7 +148,7 @@ public class Main {
                     lowChars += 1;
                 else if(Character.isDigit(ch))
                     digits += 1;
-                
+
             }
         }
 
@@ -161,7 +161,7 @@ public class Main {
             System.out.println("\nThe Password is weak, please try again.\n ");
             return false;
         }
-        
+
     }
 
     /**
@@ -212,7 +212,7 @@ public class Main {
             if(currentUser != null){
                 printMenu(); // if a user is logged in do not show the home screen
             } else {
-                choice = getMenuChoice(new String[] {"Continue to login form", "I forgot my password", "Go Back"});
+                choice = getMenuChoice(new String[] {"Continue to login form", "I forgot my password", "Back to Main"});
                 switch (choice) {
                     case 1:
                         showLoginForm();
@@ -511,6 +511,8 @@ public class Main {
                 break;
             case 1:
                 System.out.println("View Assigned Tickets");
+                //show all open ticket assigned to technician
+                //viewTechOpenTickets();
                 techViewTicketsMenu();
                 break;
             case 2:
@@ -521,18 +523,68 @@ public class Main {
         }
     }
 
+//    //show all open ticket assigned to technician
+//    private void viewTechOpenTickets() {
+//        System.out.println("Current Technician tickets ");
+//        //Get current tech open tickets
+//        ArrayList<Ticket> currentTechTickets = ((Technician) currentUser).getAssignedTickets();
+//        //Filter tickets that status are open
+//        for (Ticket ticket:currentTechTickets) {
+//            if (ticket.getStatus().equals(Status.OPEN)){
+//                System.out.println("**************************");
+//                System.out.println("Ticket Num : " + ticket.getTicketNumber());
+//                System.out.println("Ticket Severity : " + ticket.getSeverity());
+//                System.out.println("Ticket Status : " + ticket.getStatus());
+//                System.out.println("Ticket description : " + ticket.getDescription());
+//                System.out.println("**************************");
+//
+//            }
+//        }
+//    }
+
     public void techViewTicketsMenu(){
-        System.out.println("Which Ticket would you like to view?");
-        for (int i = 0; i < ((Technician) currentUser).getAssignedTickets().size(); i ++){
-            System.out.printf("%d. %s%n", i+1,((Technician) currentUser).getAssignedTickets().get(i).getTicketNumber() );
+
+        ArrayList<Ticket> currentTechTickets = ((Technician) currentUser).getAssignedTickets();
+//        //Filter tickets that status are open
+        if (currentTechTickets.size()>0){
+            //start counter for choice.
+            int i= 0;
+            System.out.println("Which Ticket would you like to view?");
+            for (Ticket ticket:currentTechTickets) {
+                if (ticket.getStatus().equals(Status.OPEN)){
+                    System.out.printf("%d. %s%n", i+1,((Technician) currentUser).getAssignedTickets().get(i).getTicketNumber() );
+                }
+            }
+
+            try{
+                System.out.println(currentTechTickets.size()+1 + " Go Back");
+                int choice = Integer.parseInt(sc.nextLine()) - 1;
+               //Test if the selected choice is to go back.
+                if (currentTechTickets.size() == choice){
+                    technicianMenu();
+                }else {
+                    techViewTicket(choice);
+                }
+
+            } catch (NumberFormatException e){
+
+                System.out.println("Please enter a valid number");
+                techViewTicketsMenu();
+            }catch (IndexOutOfBoundsException e){
+                System.out.println("Please enter a valid number");
+                techViewTicketsMenu();
+            }
+        }else {
+            System.out.println("You have not open ticket assigned");
         }
-        try{
-            int choice = Integer.parseInt(sc.nextLine()) - 1;
-            techViewTicket(choice);
-        } catch (NumberFormatException e){
-            System.out.println("Please enter a valid number");
-            techViewTicketsMenu();
-        }
+
+
+
+//        for (int i = 0; i < ((Technician) currentUser).getAssignedTickets().size(); i ++){
+//            System.out.printf("%d. %s%n", i+1,((Technician) currentUser).getAssignedTickets().get(i).getTicketNumber() );
+//        }
+
+
 
 
     }
@@ -554,7 +606,7 @@ public class Main {
                 System.out.println("Change Status yet to implement");
 
             case 2: changeSeverity(ticket);
-                    break;
+                break;
 
             case 3:
                 technicianMenu();
@@ -645,9 +697,9 @@ public class Main {
     }
 
     public void initialiseTickets(){
-        Ticket ticket1 = new Ticket(Severity.LOW, "test");
-        Ticket ticket2 = new Ticket(Severity.MEDIUM, "test");
-        Ticket ticket3 =  new Ticket(Severity.HIGH, "Test");
+        Ticket ticket1 = new Ticket(Severity.LOW, "testLow");
+        Ticket ticket2 = new Ticket(Severity.MEDIUM, "testMedium");
+        Ticket ticket3 =  new Ticket(Severity.HIGH, "TestHigh");
 
         assignTicket(ticket1);
         assignTicket(ticket2);
