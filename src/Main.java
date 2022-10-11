@@ -10,13 +10,15 @@ import java.util.Timer;
  */
 public class Main {
 
-    private final int MIN_PASSWORD_LENGTH = 20;
+    private final int MIN_PASSWORD_LENGTH = 50;
 
     private final ArrayList<User> users = new ArrayList<>(); // Users can be of type User or Type Technician
     private User currentUser; // stores the currently logged-in user null otherwise
 
     //Array to hold closed tickets archived for 24 hs
     private ArrayList<Ticket> archivedTickets = new ArrayList<>();
+    // The amount of time set before the archived tickets becomes unavailable.
+    private int TIME_IN_SECONDS = 10;
     private Scanner sc;
 
     public Main() {
@@ -529,30 +531,30 @@ public class Main {
                 break;
             case 2:
                 System.out.println("View Closed and Archived Tickets");
+                viewTechCloseArchivedTickets();
                 break;
             default:
                 System.out.println("Please enter a valid choice integer only");
         }
     }
 
-//    //show all open ticket assigned to technician
-//    private void viewTechOpenTickets() {
-//        System.out.println("Current Technician tickets ");
-//        //Get current tech open tickets
-//        ArrayList<Ticket> currentTechTickets = ((Technician) currentUser).getAssignedTickets();
-//        //Filter tickets that status are open
-//        for (Ticket ticket:currentTechTickets) {
-//            if (ticket.getStatus().equals(Status.OPEN)){
-//                System.out.println("**************************");
-//                System.out.println("Ticket Num : " + ticket.getTicketNumber());
-//                System.out.println("Ticket Severity : " + ticket.getSeverity());
-//                System.out.println("Ticket Status : " + ticket.getStatus());
-//                System.out.println("Ticket description : " + ticket.getDescription());
-//                System.out.println("**************************");
-//
-//            }
-//        }
-//    }
+    //show all closed ticket archived for 24H
+    private void viewTechCloseArchivedTickets() {
+        System.out.println("Archived closed tickets ");
+        //Get current tech open tickets
+//        ArrayList<Ticket> assignedTickets = ((Technician) currentUser).getAssignedTickets();
+        //Print archived tickets array available for 24Hs
+        for (Ticket ticket:archivedTickets) {
+                System.out.println("**************************");
+                System.out.println("Ticket Num : " + ticket.getTicketNumber());
+                System.out.println("Ticket Severity : " + ticket.getSeverity());
+                System.out.println("Ticket Status : " + ticket.getStatus());
+                System.out.println("Ticket description : " + ticket.getDescription());
+                System.out.println("**************************");
+
+
+        }
+    }
 
     public void techViewTicketsMenu() {
 
@@ -565,6 +567,7 @@ public class Main {
             for (Ticket ticket : currentTechTickets) {
                 if (ticket.getStatus().equals(Status.OPEN)) {
                     System.out.printf("%d. %s%n", i + 1, ((Technician) currentUser).getAssignedTickets().get(i).getTicketNumber());
+                    i++;
                 }
             }
 
@@ -612,8 +615,7 @@ public class Main {
 
         switch (choice) {
             case 1:
-                System.out.println("Change Status yet to implement");
-                //ArchiveTimer(5,"TN-4000");
+
                 changeStatus(ticket);
                 break;
             case 2:
@@ -630,7 +632,7 @@ public class Main {
 
     //To change ticket status
     private void changeStatus(Ticket ticket) {
-        Status origStatus = ticket.getStatus();
+
         ArrayList <Status> values = new ArrayList<>();
 
         System.out.printf("Current status is: %s%n", ticket.getStatus().toString());
@@ -645,15 +647,18 @@ public class Main {
         try {
             int choice = Integer.parseInt(sc.nextLine());
             ticket.setStatus(values.get(choice -1));
+            //remove ticket from technician array that was closed.
+            ((Technician) currentUser).removeAssignedTicket(ticket);
+
         } catch
         (NumberFormatException e){
             System.out.println("Please enter a valid choice");
-            changeSeverity(ticket);
+            changeStatus(ticket);
         }
 
         if (ticket.getStatus() != Status.OPEN){
             //Add to archived array.
-            ArchiveTimer(10, ticket);
+            ArchiveTimer(ticket);
         }
 
     }
@@ -661,24 +666,29 @@ public class Main {
     //To archive after 24 hours. Testing 5 second.
     //Timer variable.
     Timer timer;
-    private void ArchiveTimer(int seconds, Ticket ticketNumber) {
+    private void ArchiveTimer(Ticket ticketToArchive) {
         timer = new Timer();
-        timer.schedule(new ArchiveTickets(ticketNumber), seconds * 1000);
+        timer.schedule(new ArchiveTickets(ticketToArchive), TIME_IN_SECONDS * 1000);
     }
 
-
+    //Inner class to add a ticket to closed array.
     class ArchiveTickets extends TimerTask {
-        //Inner class to add a ticket to closed array.
-        ArchiveTickets(Ticket ticketNumber){
+        Ticket tempTicket;
+        ArchiveTickets(Ticket ticketToArchive){
             System.out.println("Ticket Archived");
-            archivedTickets.add(ticketNumber);
+            archivedTickets.add(ticketToArchive);
+            this.tempTicket = ticketToArchive;
         }
         public void run() {
             System.out.println("Archived Removed");
 
-            //ToDo implement ticket remove method
-//            System.out.println("Ticket N " + this.tempTicket);
-            timer.cancel(); //Terminate the timer thread
+           //Remove ticket after 24Hs it could be through to an array for permanent archived.
+            archivedTickets.remove(this.tempTicket);
+            //To terminate the thread when the array is empty.
+            if (archivedTickets.size()==0){
+                timer.cancel(); //Terminate the timer thread
+            }
+
         }
 
 
@@ -767,13 +777,31 @@ public class Main {
     }
 
     public void initialiseTickets(){
-        Ticket ticket1 = new Ticket(Severity.LOW, "testLow");
-        Ticket ticket2 = new Ticket(Severity.MEDIUM, "testMedium");
-        Ticket ticket3 =  new Ticket(Severity.HIGH, "TestHigh");
+        Ticket ticket1 = new Ticket(Severity.LOW, "testLow1");
+        Ticket ticket2 = new Ticket(Severity.MEDIUM, "testMedium1");
+        Ticket ticket3 =  new Ticket(Severity.HIGH, "TestHigh1");
+        Ticket ticket4 = new Ticket(Severity.LOW, "testLow2");
+        Ticket ticket5 = new Ticket(Severity.MEDIUM, "testMedium2");
+        Ticket ticket6 =  new Ticket(Severity.HIGH, "TestHigh2");
+        Ticket ticket7 = new Ticket(Severity.LOW, "testLow3");
+        Ticket ticket8 = new Ticket(Severity.MEDIUM, "testMedium3");
+        Ticket ticket9 =  new Ticket(Severity.HIGH, "TestHigh3");
+        Ticket ticket10 = new Ticket(Severity.LOW, "testLow4");
+        Ticket ticket11 = new Ticket(Severity.MEDIUM, "testMedium4");
+        Ticket ticket12 =  new Ticket(Severity.HIGH, "TestHigh4");
 
         assignTicket(ticket1);
         assignTicket(ticket2);
         assignTicket(ticket3);
+        assignTicket(ticket4);
+        assignTicket(ticket5);
+        assignTicket(ticket6);
+        assignTicket(ticket7);
+        assignTicket(ticket8);
+        assignTicket(ticket9);
+        assignTicket(ticket10);
+        assignTicket(ticket11);
+        assignTicket(ticket12);
     }
 
 
