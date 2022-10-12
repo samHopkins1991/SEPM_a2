@@ -15,10 +15,11 @@ public class Main {
     private final ArrayList<User> users = new ArrayList<>(); // Users can be of type User or Type Technician
     private User currentUser; // stores the currently logged-in user null otherwise
 
-    //Array to hold closed tickets archived for 24 hs
-    private ArrayList<Ticket> archivedTickets = new ArrayList<>();
+    private final ArrayList<Ticket> archivePool = new ArrayList<>(); // tickets to be archived
+    private final ArrayList<Ticket> archivedTickets = new ArrayList<>(); // tickets that are archived // view only
+
     // The amount of time set before the archived tickets becomes unavailable.
-    private int TIME_IN_SECONDS = 60;
+    private final int TIME_IN_SECONDS = 60;
     private Scanner sc;
 
     public Main() {
@@ -517,7 +518,7 @@ public class Main {
         // view all closed and archived tickets
         System.out.println("Technician Menu");
         printLogoutOption(); // -1
-        int choice = getMenuChoice(new String[]{"View Assigned Tickets", "View Closed and Archived Tickets"});
+        int choice = getMenuChoice(new String[]{"View Assigned Tickets", "View Closed Tickets", "View Archived Tickets"});
 
         switch (choice) {
             case -1:
@@ -530,53 +531,68 @@ public class Main {
                 techViewTicketsMenu();
                 break;
             case 2:
-                System.out.println("View Closed and Archived Tickets");
-                viewTechCloseArchivedTickets();
+                System.out.println("View Closed Tickets");
+                viewClosedTickets();
+                break;
+            case 3:
+                System.out.println("View Archived Tickets");
+                viewArchivedTickets();
                 break;
             default:
                 System.out.println("Please enter a valid choice integer only");
         }
     }
 
-    //show all closed ticket archived for 24H
-    private void viewTechCloseArchivedTickets() {
+    private void viewArchivedTickets() {
+        for (Ticket ticket: archivedTickets) {
+            System.out.println("**************************");
+            System.out.println("Ticket Num : " + ticket.getTicketNumber());
+            System.out.println("Ticket Severity : " + ticket.getSeverity());
+            System.out.println("Ticket Status : " + ticket.getStatus());
+            System.out.println("Ticket description : " + ticket.getDescription());
+            System.out.println("**************************");
+        }
+    }
 
-        if (archivedTickets.size() > 0) {
+    //show all closed ticket archived for 24H
+    private void viewClosedTickets() {
+
+        if (archivePool.size() > 0) {
             System.out.println("Archived closed tickets ");
             //start counter for choice.
             int i = 0;
             System.out.println("Select a Ticket to view?");
-            for (Ticket ticket : archivedTickets) {
+            for (Ticket ticket : archivePool) {
                     System.out.printf("%d. %s%n", i + 1, ticket.getTicketNumber());
                     i++;
             }
 
             try {
-                System.out.println(archivedTickets.size() + 1 + " Go Back");
+                System.out.println(archivePool.size() + 1 + " Go Back");
                 int choice = Integer.parseInt(sc.nextLine()) - 1;
                 //Test if the selected choice is to go back.
-                if (archivedTickets.size() == choice) {
+                if (archivePool.size() == choice) {
                     technicianMenu();
                 } else {
-                    techViewClosedArchivedTickets(choice);
+                    techViewClosedTickets(choice);
                 }
 
             } catch (NumberFormatException e) {
 
                 System.out.println("Please enter a valid number");
-                viewTechCloseArchivedTickets();
+                viewClosedTickets();
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Please enter a valid number");
-                viewTechCloseArchivedTickets();
+                viewClosedTickets();
             }
         } else {
-            System.out.println("There is not closed ticket archived to view");
+            System.out.println("There are currently no closed tickets to view!");
         }
 
     }
 
-    public void techViewClosedArchivedTickets(int index){
-        Ticket ticket = archivedTickets.get(index);
+    public void techViewClosedTickets(int index){
+        Ticket ticket = archivePool.get(index);
 
         System.out.println("**************************");
         System.out.println("Ticket Num : " + ticket.getTicketNumber());
@@ -589,7 +605,6 @@ public class Main {
 
         switch (choice) {
             case 1:
-
                 changeStatusOfArchived(ticket);
                 break;
             case 2:
@@ -616,7 +631,7 @@ public class Main {
             //Re-assign ticket.
             assignTicket(ticket);
             //remove ticket from archived array that was closed.
-            archivedTickets.remove(ticket);
+            archivePool.remove(ticket);
 
         } catch
         (NumberFormatException e){
@@ -748,22 +763,30 @@ public class Main {
         Ticket tempTicket;
         ArchiveTickets(Ticket ticketToArchive){
             System.out.println("Ticket Archived");
-            archivedTickets.add(ticketToArchive);
+            archivePool.add(ticketToArchive);
             this.tempTicket = ticketToArchive;
         }
         public void run() {
-            System.out.println("Archived Removed");
 
-           //Remove ticket after 24Hs it could be through to an array for permanent archived.
-            archivedTickets.remove(this.tempTicket);
+            // todo comment before submission - for testing only
+            System.out.println("Removed ticket number " + this.tempTicket.getTicketNumber() + " from archive pool");
+
+            //Remove ticket after 24Hs it could be through to an array for permanent archived.
+            archivePool.remove(this.tempTicket);
+
+            // if the ticket is reopened do not add it to the archived tickets
+            if(this.tempTicket.getStatus() != Status.OPEN){
+
+                System.out.println("Archived ticket number " + this.tempTicket.getTicketNumber()); // todo comment before submission - testing only
+                archivedTickets.add(this.tempTicket);
+            }
+
             //To terminate the thread when the array is empty.
-            if (archivedTickets.size()==0){
+            if (archivePool.size()==0){
                 timer.cancel(); //Terminate the timer thread
             }
 
         }
-
-
     }
 
 
