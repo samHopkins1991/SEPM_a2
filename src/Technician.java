@@ -22,6 +22,10 @@ public class Technician extends User{
     public int getNumberOfAssignedTickets(){
         return assignedTickets.size();
     }
+    public void removeAssignedTicket(Ticket assignedTicket){
+        this.assignedTickets.remove(assignedTicket);
+    }
+
 
 //    private int getTicketIndex(String ticketNumber){
 //        return assignedTickets.indexOf(ticketNumber);
