@@ -21,11 +21,27 @@ Users can submit tickets while Technicians can view and update them.
 Technicians and Staff have been hardcoded for now for easy use.
  
 *** 
-***
-### Current Version 0.1
-***
+### Current Version 0.2
 
-### What's New
+
+#### What's New
+
+- Users are now able to change their password before attempting to login.
+
+- Technicians are now able to change the severity of a ticket.
+  - This also reassigns the ticket to the correct Level technician upon reassignment. 
+- Technicians are now able to change the status of a ticket.
+  - They can also reopen tickets that were archived less than 24 hours ago.
+- Staff & Technicians can view their OPEN tickets.
+- Closed tickets are automatically archived after 24 hours.
+- Technicians can view all closed tickets. 
+- Technicians can only view their own assigned tickets.
+
+
+
+***
+### Previous Version 0.1
+
 ***
 The team in group 6 has implemented the following features:  
 - Users and Technicians can be created from the login screen
@@ -43,16 +59,10 @@ The team in group 6 has implemented the following features:
 
 ***
 ### What's Coming Next
-***
-The following features are planned to be delivered next sprint:  
-- Streamlined login function (moving forgotten password hurdle before logging in)
-- Technicians can change the severity of the ticket up or down
-	- This will trigger a reassignment of the ticket
-- Technicians can change the status of the tickets: OPEN/CLOSED, RESOLVED/UNRESOLVED
-- Users can view their OPEN tickets
-- The system will automatically archive CLOSED tickets
-- Technicians can view all CLOSED and archived tickets
-- Technicians can only view OPEN tickets assigned to them
+
+We await feedback from the client for the next opportunities to enhance this product.
+
+
 ***
 ## Instructions
 ***
