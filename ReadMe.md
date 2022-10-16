@@ -26,6 +26,7 @@ Technicians and Staff have been hardcoded for now for easy use.
 
 #### What's New
 
+- system will automatically create 12 tickets for ease of testing
 - Users are now able to change their password before attempting to login.
 
 - Technicians are now able to change the severity of a ticket.
@@ -33,7 +34,7 @@ Technicians and Staff have been hardcoded for now for easy use.
 - Technicians are now able to change the status of a ticket.
   - They can also reopen tickets that were archived less than 24 hours ago.
 - Staff & Technicians can view their OPEN tickets.
-- Closed tickets are automatically archived after 24 hours.
+- Closed tickets are automatically archived after 24 hours. (1 minute in program - change "TIME_IN_SECONDS" variable in Main.java to adjust
 - Technicians can view all closed tickets. 
 - Technicians can only view their own assigned tickets.
 
@@ -176,7 +177,7 @@ To change your password:
 
 If the details entered match a User in the system, you will be prompted to enter a new password.  
 ***
-### Changing the severity of the Ticket - Staff Member
+
 
 
 
