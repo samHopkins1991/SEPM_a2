@@ -21,12 +21,37 @@ Users can submit tickets while Technicians can view and update them.
 Technicians and Staff have been hardcoded for now for easy use.
  
 *** 
-### Current Version 0.2
+### Current Version 0.3
+
+#### What's New 
+
+- Implementation of reporting for System Owner
+
+- System owner is now able to generate a report under their login. 
+- System owner can search the following parameters:
+    - Start Date of Report
+    - End Date of Report 
+- A report will generate containing the following:
+  - Opened By 
+  - Date Opened
+  - Severity 
+  - Status (Open/Closed)
+  - Assigned to
+  - Days opened
+
+A new user (System Owner) has been added with the following login information to allow access:
+
+| Login           | Password |
+|-----------------|----------|
+| x               | x        |
 
 
-#### What's New
 
-- system will automatically create 12 tickets for ease of testing
+***
+### Previous Version 0.2
+
+
+- System will automatically create 12 tickets for ease of testing
 - Users are now able to change their password before attempting to login.
 
 - Technicians are now able to change the severity of a ticket.
@@ -43,7 +68,6 @@ Technicians and Staff have been hardcoded for now for easy use.
 ***
 ### Previous Version 0.1
 
-***
 The team in group 6 has implemented the following features:  
 - Users and Technicians can be created from the login screen
 - Once a User or Technician has been set up, they can log in
@@ -66,7 +90,7 @@ We await feedback from the client for the next opportunities to enhance this pro
 
 ***
 ## Instructions
-***
+
 ### To open on Eclipse
 1. Download the zip file named SEPM_a2.zip and save it to the desktop
 2. Open Eclipse
@@ -75,7 +99,7 @@ We await feedback from the client for the next opportunities to enhance this pro
 5. Select the Desktop and choose the Zip file that is saved. Click Open
 6. Navigate to SEPM_a2/src
 7. Right click "Main.java" and select "Run As" > "Java Application"
-***
+
 ### Once the program is running
 The menu system of the program is run by entering the corresponding digits into the console and pressing enter.  
 ie: to choose 1. Existing User Login, simply enter '1' and press enter  
@@ -111,7 +135,7 @@ Please note, passwords must be at least 20 characters long and contain both alph
 
 
 ***
-### As a Staff Member
+## As a Staff Member
 To Submit a ticket:  
 - Select 1. Submit Ticket  
 - Enter the severity  
