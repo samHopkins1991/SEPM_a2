@@ -6,7 +6,11 @@ public class Technician extends User{
     private int level;
 
     public Technician(String name, String email, String phoneNumber, String password, int level) {
-        super(name, email, phoneNumber, password);
+        this(name, email, phoneNumber, password, level, false);
+    }
+
+    public Technician(String name, String email, String phoneNumber, String password, int level, boolean isSystemOwner) {
+        super(name, email, phoneNumber, password, isSystemOwner);
         this.level = level;
         this.assignedTickets = new ArrayList<>();
     }

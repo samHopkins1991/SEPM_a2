@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -11,16 +13,15 @@ import java.util.Timer;
 public class Main {
 
     private final int MIN_PASSWORD_LENGTH = 20;
+    private final int TIME_IN_SECONDS = 60;// The amount of time set before the archived tickets becomes unavailable.
+    private Scanner sc;
 
     private final ArrayList<User> users = new ArrayList<>(); // Users can be of type User or Type Technician
     private User currentUser; // stores the currently logged-in user null otherwise
 
-    private final ArrayList<Ticket> archivePool = new ArrayList<>(); // tickets to be archived
-    private final ArrayList<Ticket> archivedTickets = new ArrayList<>(); // tickets that are archived // view only
-
-    // The amount of time set before the archived tickets becomes unavailable.
-    private final int TIME_IN_SECONDS = 60;
-    private Scanner sc;
+    private final ArrayList<Ticket> openTickets = new ArrayList<>();        // All currently Open Tickets
+    private final ArrayList<Ticket> archivePool = new ArrayList<>();        // All tickets that are currently closed
+    private final ArrayList<Ticket> archivedTickets = new ArrayList<>();    // All tickets that are archived -> view only
 
     public Main() {
         initialise();
@@ -32,10 +33,10 @@ public class Main {
      * Bootstraps the application setting up required parameters and users
      */
     private void initialise() {
-        createTechnicians();
-        createUsers();
-        initialiseTickets();
         this.sc = new Scanner(System.in);
+        createUsers();
+        createTechnicians();
+        initialiseTickets();
     }
 
     /**
@@ -280,16 +281,15 @@ public class Main {
      * prints a welcome for the currently logged-in user
      */
     private void printUserWelcome() {
-        System.out.println("*****************");
+        System.out.println("\n*****************");
         System.out.println("Welcome " + currentUser.getName());
     }
 
     /**
      * Provides a form to create a new ticket
-     *
      * @return A valid ticket or null if the creation was cancelled
      */
-    private Ticket createTicket() {
+    private Ticket createTicketDialog() {
 
         String severity = "";
         System.out.println("Please enter severity level :");
@@ -323,8 +323,22 @@ public class Main {
             }
         } while (description.equals(""));
 
-        //create and return Ticket
-        return new Ticket(Severity.valueOf(severity), description);
+        // create and return Ticket
+        return createTicket(Severity.valueOf(severity), description, this.currentUser);
+    }
+
+    /**
+     * Creates and returns the created ticket,
+     * Call Create Ticket Dialog instead!
+     * @param severity Ticket Severity Level
+     * @param description Ticket description
+     * @param user User who created the ticket
+     * @return Valid Ticket
+     */
+    private Ticket createTicket(Severity severity, String description, User user){
+        Ticket t = new Ticket(severity, description, this.currentUser);
+        this.openTickets.add(t);
+        return t;
     }
 
     /**
@@ -332,8 +346,9 @@ public class Main {
      * if there is a tie, it is random.
      *
      * @param ticket the ticket that will be assigned to a technician
+     * @return the provided ticket
      */
-    public void assignTicket(Ticket ticket) {
+    public Ticket assignTicket(Ticket ticket) {
         // tracks which level tech needs to be for ticket
         int techLvl;
         // array of technicians at ticket level
@@ -370,18 +385,27 @@ public class Main {
             }
         }
 
-        // if only 1 tech in array - assign ticket to them
-        if (techsWithLowestTickets.size() == 1) {
-            techsWithLowestTickets.get(0).setAssignedTickets(ticket);
+        try{
+            Technician t = null;
 
-            // if more than one pick random
-        } else {
-            Random rand = new Random();
-            int numTechs = techsWithLowestTickets.size();
-            int randomTechIndex = rand.nextInt(numTechs);
+            if (techsWithLowestTickets.size() == 1) { // if only 1 tech in array - assign ticket to them
+                t = techsWithLowestTickets.get(0);
+            } else { // if more than one pick random
+                Random rand = new Random();
+                int numTechs = techsWithLowestTickets.size();
+                int randomTechIndex = rand.nextInt(numTechs);
+                t = techsWithLowestTickets.get(randomTechIndex);
+            }
 
-            techsWithLowestTickets.get(randomTechIndex).setAssignedTickets(ticket);
+            t.setAssignedTickets(ticket);   // may throw the error
+            ticket.setAssignee(t);          // won't be reached if error thrown
+        } catch (NullPointerException e){
+            System.out.println("Cannot assign ticket to a technician as no technicians exist!");
         }
+
+
+
+        return ticket;
     }
 
     /**
@@ -390,6 +414,9 @@ public class Main {
      * otherwise a user will see the users menu
      */
     public void printMenu() {
+        // if the user is the system owner display this message
+        if (currentUser.isSystemOwner()) System.out.println("You are the System Owner");
+
         if (currentUser instanceof Technician) {
             technicianMenu();
         } else {
@@ -404,6 +431,13 @@ public class Main {
         // options for users:
         // submit ticket
         // view my tickets
+        if(currentUser.isSystemOwner()){ displaySystemOwnerMenu(); }
+        else { displayGeneralUserMenu(); }
+    }
+
+
+
+    private void displayGeneralUserMenu() {
         System.out.println("User Menu");
         int choice = 0;
 
@@ -416,31 +450,19 @@ public class Main {
                     return;
                 case 1:
                     System.out.println("submit ticket");
-                    Ticket ticket = createTicket();
+                    Ticket ticket = createTicketDialog();
 
-                    //Only assign ticket if not "null" in case the user select "cancel ticket"
-                    if (ticket != null) {
-                        //assign ticket to current user
-                        currentUser.setTickets(ticket);
-                        //Call your assign ticket method here
-                        assignTicket(ticket);
-
-//                        System.out.println("Ticket Num : " + ticket.getTicketNumber());
-//                        System.out.println("Ticket Severity : " + ticket.getSeverity());
-//                        System.out.println("Ticket Status : " + ticket.getStatus());
-//                        System.out.println("Ticket description : " + ticket.getDescription());
-
-
+                    if (ticket != null) { // Only assign ticket if not "null" in case the user select "cancel ticket"
+                        currentUser.AddTicket(ticket); // assign ticket to current user
+                        assignTicket(ticket); // assign ticket to a technician
                     }
-
 
                     break;
                 case 2:
                     System.out.println("view my tickets");
                     viewUserTickets();
-
                     break;
-                //ToDo take this out for final product
+                // ToDo take this out for final product
                 // hidden function for showing ticket assignments -
                 // have left in for when we reassign tickets
                 case 3:
@@ -451,6 +473,41 @@ public class Main {
             }
         }
     }
+
+    private void displaySystemOwnerMenu() {
+        System.out.println("Sytem Owner Menu");
+        int choice = 0;
+
+        while (true) { // returns if a valid choice is given after running the appropriate functions
+            printLogoutOption(); // -1
+            choice = getMenuChoice(new String[]{"Submit Ticket", "View My Tickets", "Generate Ticket Report"});
+            switch (choice) {
+                case -1:
+                    logoutUser();
+                    return;
+                case 1:
+                    System.out.println("submit ticket");
+                    Ticket ticket = createTicketDialog();
+
+                    if (ticket != null) { // Only assign ticket if not "null" in case the user select "cancel ticket"
+                        currentUser.AddTicket(ticket); // assign ticket to current user
+                        assignTicket(ticket); // assign ticket to a technician
+                    }
+
+                    break;
+                case 2:
+                    System.out.println("view my tickets");
+                    viewUserTickets();
+                    break;
+                case 3:
+                    showTicketReportDialog();
+                    break;
+                default:
+                    System.out.println("Please enter a valid choice integer only");
+            }
+        }
+    }
+
 
     /**
      * testing function for ticket assignment.. have left in for when we
@@ -484,8 +541,6 @@ public class Main {
 
             }
         }
-
-
     }
 
     /**
@@ -633,10 +688,9 @@ public class Main {
             //remove ticket from archived array that was closed.
             archivePool.remove(ticket);
 
-        } catch
-        (NumberFormatException e){
+        } catch (NumberFormatException e){
             System.out.println("Please enter a valid choice");
-            changeStatusOfArchived(ticket);
+            changeStatusOfArchived(ticket);  // todo remove recursion
         }
 
 
@@ -734,7 +788,7 @@ public class Main {
         try {
             int choice = Integer.parseInt(sc.nextLine());
             ticket.setStatus(values.get(choice -1));
-            //remove ticket from technician array that was closed.
+            // remove ticket from technician array that was closed.
             ((Technician) currentUser).removeAssignedTicket(ticket);
 
         } catch
@@ -744,13 +798,13 @@ public class Main {
         }
 
         if (ticket.getStatus() != Status.OPEN){
-            //Add to archived array.
-            ArchiveTimer(ticket);
+            ArchiveTimer(ticket);                   // prepare to add ticket to archived tickets
+            ticket.setClosedBy(this.currentUser);   // set closing user and closing date
+            openTickets.remove(ticket);             // remove closed ticket from open tickets
         }
-
     }
 
-    //To archive after 24 hours. Testing 5 second.
+    //To archive after 24 hours. Testing 60 seconds.
     //Timer variable.
     Timer timer;
     private void ArchiveTimer(Ticket ticketToArchive) {
@@ -767,29 +821,25 @@ public class Main {
             this.tempTicket = ticketToArchive;
         }
         public void run() {
-
-            // todo comment before submission - for testing only
-            System.out.println("Removed ticket number " + this.tempTicket.getTicketNumber() + " from archive pool");
-
-            //Remove ticket after 24Hs it could be through to an array for permanent archived.
+            // Remove ticket after 24Hrs
             archivePool.remove(this.tempTicket);
 
             // if the ticket is reopened do not add it to the archived tickets
             if(this.tempTicket.getStatus() != Status.OPEN){
-
-                System.out.println("Archived ticket number " + this.tempTicket.getTicketNumber()); // todo comment before submission - testing only
                 archivedTickets.add(this.tempTicket);
+            } else {
+                openTickets.add(this.tempTicket);
+                this.tempTicket.setClosedDate(null);    // remove closed Date
+                this.tempTicket.setClosedBy(null);      // remove closing User
+                reassignTicket(this.tempTicket);
             }
 
-            //To terminate the thread when the array is empty.
-            if (archivePool.size()==0){
-                timer.cancel(); //Terminate the timer thread
+            // To terminate the thread when the array is empty.
+            if (archivePool.size() == 0){
+                timer.cancel(); // Terminate the timer thread
             }
-
         }
     }
-
-
 
     public void changeSeverity(Ticket ticket){
         Severity origSeverity = ticket.getSeverity();
@@ -831,25 +881,18 @@ public class Main {
      */
     private void logoutUser() {
         System.out.println("Logging out!!!");
-        currentUser = null; //clear current user var
+        currentUser = null; // clear current user var
     }
 
     /**
      * creates and adds technicians to the users array
      */
     public void createTechnicians(){
-        Technician a = new Technician("Harry Styles", "harrystyles@gmail.com", "04123456789", "password123", 1);
-        Technician b = new Technician ("Niall Horan", "niallhoran@gmail.com", "04123456789", "password123", 1);
-        Technician c = new Technician("Louis Tomlinson", "louistomlinson@gmail.com", "04123456789", "password123", 2);
-        Technician d = new Technician("Zayn Malik", "zaynmalik@gmail.com", "04123456789", "password123", 2);
-        Technician e = new Technician ("Liam Payne", "liampayne@gmail.com", "04123456789", "password123", 1);
-        // adds technicians to arraylist
-        users.add(a);
-        users.add(b);
-        users.add(c);
-        users.add(d);
-        users.add(e);
-
+        users.add(new Technician("Harry Styles", "harrystyles@gmail.com", "04123456789", "password123", 1));
+        users.add(new Technician("Niall Horan", "niallhoran@gmail.com", "04123456789", "password123", 1));
+        users.add(new Technician("Louis Tomlinson", "louistomlinson@gmail.com", "04123456789", "password123", 2));
+        users.add(new Technician("Zayn Malik", "zaynmalik@gmail.com", "04123456789", "password123", 2));
+        users.add(new Technician("Liam Payne", "liampayne@gmail.com", "04123456789", "password123", 1));
     }
 
     /**
@@ -857,52 +900,218 @@ public class Main {
      * todo remove in production
      */
     public void createUsers(){
-        User a = new User("Sam", "Sam","04123456789", "Sam");
-        User b = new User("Harley", "Harley","04123456789", "Harley");
-        User c = new User("Alan", "Alan","04123456789", "Alan");
-        User d = new User("Raf", "Raf","04123456789", "Raf");
-        User e = new User("Josh", "Josh","04123456789", "Josh");
-
-        // adds users to array list
-        users.add(a);
-        users.add(b);
-        users.add(c);
-        users.add(d);
-        users.add(e);
+        users.add(new User("Test User", "x", "0400000000", "x", true)); // test user creates all test tickets
+        users.add(new User("Sam", "Sam","04123456789", "Sam"));
+        users.add(new User("Harley", "Harley","04123456789", "Harley"));
+        users.add(new User("Alan", "Alan","04123456789", "Alan"));
+        users.add(new User("Raf", "Raf","04123456789", "Raf"));
+        users.add(new User("Josh", "Josh","04123456789", "Josh"));
     }
 
     public void initialiseTickets(){
-        Ticket ticket1 = new Ticket(Severity.LOW, "testLow1");
-        Ticket ticket2 = new Ticket(Severity.MEDIUM, "testMedium1");
-        Ticket ticket3 =  new Ticket(Severity.HIGH, "TestHigh1");
-        Ticket ticket4 = new Ticket(Severity.LOW, "testLow2");
-        Ticket ticket5 = new Ticket(Severity.MEDIUM, "testMedium2");
-        Ticket ticket6 =  new Ticket(Severity.HIGH, "TestHigh2");
-        Ticket ticket7 = new Ticket(Severity.LOW, "testLow3");
-        Ticket ticket8 = new Ticket(Severity.MEDIUM, "testMedium3");
-        Ticket ticket9 =  new Ticket(Severity.HIGH, "TestHigh3");
-        Ticket ticket10 = new Ticket(Severity.LOW, "testLow4");
-        Ticket ticket11 = new Ticket(Severity.MEDIUM, "testMedium4");
-        Ticket ticket12 =  new Ticket(Severity.HIGH, "TestHigh4");
 
-        assignTicket(ticket1);
-        assignTicket(ticket2);
-        assignTicket(ticket3);
-        assignTicket(ticket4);
-        assignTicket(ticket5);
-        assignTicket(ticket6);
-        assignTicket(ticket7);
-        assignTicket(ticket8);
-        assignTicket(ticket9);
-        assignTicket(ticket10);
-        assignTicket(ticket11);
-        assignTicket(ticket12);
+        // this is a test function and assumes a valid user exists
+
+        // set the user
+        this.currentUser = users.get(0);
+
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.LOW, "testLow1", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.MEDIUM, "testMedium1", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.HIGH, "TestHigh1", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.LOW, "testLow2", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.MEDIUM, "testMedium2", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.HIGH, "TestHigh2", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.LOW, "testLow3", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.MEDIUM, "testMedium3", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.HIGH, "TestHigh3", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.LOW, "testLow4", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.MEDIUM, "testMedium4", this.currentUser))));
+        this.openTickets.add(currentUser.AddTicket(assignTicket(new Ticket(Severity.HIGH, "TestHigh4", this.currentUser))));
+
+        // unset user
+        this.currentUser = null;
+    }
+
+    private void showTicketReportDialog() {
+
+        System.out.println("Enter from Date inclusive:");
+
+        // get starting inclusive date
+        System.out.print("Please Enter a Year: ");
+        int fromYear = getValidYear();
+        System.out.print("Please Enter a Month: ");
+        int fromMonth = getValidMonth();
+        System.out.print("Please Enter a Day: ");
+        int fromDayOfMonth = getValidDay(fromYear, fromMonth);
+
+        System.out.println("Enter to Date inclusive:");
+
+        // get ending inclusive date
+        System.out.print("Please Enter a Year: ");
+        int toYear = getValidYear();
+        System.out.print("Please Enter a Month: ");
+        int toMonth = getValidMonth();
+        System.out.print("Please Enter a Day: ");
+        int toDayOfMonth = getValidDay(toYear, toMonth);
+
+        printTicketReport(LocalDate.of(fromYear, fromMonth, fromDayOfMonth), LocalDate.of(toYear, toMonth, toDayOfMonth));
+    }
+
+    public int getValidYear(){
+        int choice = -1;
+
+        while (true){
+            try {
+                choice = Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors;
+                if(choice <= 0 || choice > LocalDate.now().getYear()) {
+                    throw new NumberFormatException("Year must not be greater then " + LocalDate.now().getYear() + " inclusive: ");
+                }
+                break;
+            } catch (NumberFormatException e) {
+                System.out.print(e.getMessage());
+            }
+        }
+
+        return choice;
+    }
+
+    public int getValidMonth(){
+        int choice = -1;
+
+        while (true){
+            try {
+                choice = Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors;
+                if(choice <= 0 || choice > 12) {
+                    throw new NumberFormatException("Month must be between 1 and 12 inclusive: ");
+                }
+                break;
+            } catch (NumberFormatException e) {
+                System.out.print(e.getMessage());
+            }
+        }
+
+        return choice;
+    }
+
+    public int getValidDay(int year, int month){
+        int choice = -1;
+
+        YearMonth date = YearMonth.of(year,month);
+        int lastDayValue = date.getMonth().length(date.isLeapYear());
+
+        while (true){
+            try {
+                choice = Integer.parseInt(sc.nextLine()); // needs to be parsed this way to avoid from errors;
+                if(choice <= 0 || choice > lastDayValue) {
+                    throw new NumberFormatException("Day of Month must be between 1 and " + lastDayValue + " inclusive: ");
+                }
+                break;
+            } catch (NumberFormatException e) {
+                System.out.print(e.getMessage());
+            }
+        }
+
+        return choice;
     }
 
 
+
+
+    private void printTicketReport(LocalDate dateOpen, LocalDate dateClosed){
+
+        // temp array list used to show tickets when collected for report
+        ArrayList<Ticket> summarizedTickets = new ArrayList<>();
+
+        int ticketsCount        = 0;    // how many tickets are in the selected period
+        int ticketsOpenCount    = 0;    // how many tickets are open
+        int ticketsCUCount      = 0;    // how many tickets are closed and unresolved
+        int ticketsCRCount      = 0;    // how many tickets are closed and resolved
+        int ticketsARCount      = 0;    // how many tickets are archived
+
+        for (Ticket ticket: this.openTickets){
+            if(ticket.getCreationDate().compareTo(dateOpen) >= 0){
+                if(ticket.getClosedDate() == null || ticket.getClosedDate().compareTo(dateClosed) <= 0){
+                    ticketsCount++;
+                    summarizedTickets.add(ticket);
+                }
+            }
+        }
+
+        for (Ticket ticket: this.archivePool){
+            if(ticket.getCreationDate().compareTo(dateOpen) >= 0){
+                if(ticket.getClosedDate() == null || ticket.getClosedDate().compareTo(dateClosed) <= 0){
+                    if(ticket.getStatus() == Status.CLOSE_R)    ticketsCRCount++;
+                    if(ticket.getStatus() == Status.CLOSE_UR)   ticketsCUCount++;
+                    ticketsCount++;
+                    summarizedTickets.add(ticket);
+                }
+            }
+        }
+
+        for (Ticket ticket: this.archivedTickets){
+            if(ticket.getCreationDate().compareTo(dateOpen) >= 0){
+                if(ticket.getClosedDate() == null || ticket.getClosedDate().compareTo(dateClosed) <= 0){
+                    ticketsCount++;
+                    ticketsARCount++;
+                    summarizedTickets.add(ticket);
+                }
+            }
+        }
+
+        // display ticket table
+        // for each ticket in the report show --
+        // who opened it
+        // date opened
+        // the severity of the ticket
+        // is the ticket closed
+        // who attended to it -- if ticket is reassigned it shows only the last technician or the tech who closed it
+        // time taken to close ticket
+        System.out.println("================================================================================================");
+        System.out.printf("%-20s | %-10s | %-10s | %-7s | %-20s | %-11s |\n", "Opened By", "Date Opened", "Severity", "Closed?", "Assigned to", "Days opened");
+
+        for (Ticket ticket: summarizedTickets){
+
+            String openedby             = ticket.getOpenBy().getName();
+            String dateOpened           = ticket.getCreationDate().toString();
+            String ticketSeverity       = ticket.getSeverity().toString();
+            String isTicketClosed       = String.valueOf((ticket.getStatus() != Status.OPEN));
+
+            StringBuilder assignedTo    = new StringBuilder("");
+            if (ticket.getClosedBy() == null){
+                assignedTo.append(ticket.getAssignee() == null ? "Not Assigned" : ticket.getAssignee().getName());
+            } else {
+                assignedTo.append(ticket.getClosedBy().getName());
+            }
+
+            StringBuilder daysOpened    = new StringBuilder("");
+            if(ticket.getClosedDate() == null){
+                daysOpened.append(ticket.getCreationDate().compareTo(LocalDate.now()));
+            } else {
+                daysOpened.append(ticket.getCreationDate().compareTo(ticket.getClosedDate()));
+            }
+
+            System.out.printf("%-20s | %-11s | %-10s | %-7s | %-20s | %-11s |\n", openedby, dateOpened, ticketSeverity, isTicketClosed, assignedTo, daysOpened);
+        }
+        System.out.println("================================================================================================");
+
+        // display ticket summary
+
+        System.out.println();
+        System.out.println("========================");
+        System.out.println("|        SUMMARY       |");
+        System.out.println("========================");
+        System.out.println("Total Tickets: " + ticketsCount);
+        System.out.println("# Tickets opened: " + ticketsOpenCount);
+        System.out.println("# Tickets resolved: " + ticketsCRCount);
+        System.out.println("# Tickets unresolved: " + ticketsCUCount);
+        System.out.println("# Tickets archived: " + ticketsARCount);
+        System.out.println("======================== \n");
+
+    }
+
     /**
      * runs the application
-     * @param args an array or program arguements
+     * @param args an array or program arguments
      */
     public static void main(String[] args) {
         new Main();
